@@ -25,6 +25,13 @@ namespace HouseholdManagementSystem.Models
         {
         }
 
+        public DbSet<Chore> Chores { get; set; }
+        public DbSet<Owner> Owners { get; set; }
+        public DbSet<Room> Rooms { get; set; }
+        public DbSet<TodoItem> TodoItems { get; set; }
+        public DbSet<TodoItemStatus> TodoItemStatus { get; set; }
+
+
         public static ApplicationDbContext Create()
         {
             return new ApplicationDbContext();
