@@ -223,6 +223,14 @@
     <Compile Include="Migrations\202407142145174_status-fk.Designer.cs">
       <DependentUpon>202407142145174_status-fk.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202407150015272_owner-assigned-fk.cs" />
+    <Compile Include="Migrations\202407150015272_owner-assigned-fk.Designer.cs">
+      <DependentUpon>202407150015272_owner-assigned-fk.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202407150031000_owner-created-fk.cs" />
+    <Compile Include="Migrations\202407150031000_owner-created-fk.Designer.cs">
+      <DependentUpon>202407150031000_owner-created-fk.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Chore.cs" />
@@ -364,6 +372,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202407142145174_status-fk.resx">
       <DependentUpon>202407142145174_status-fk.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202407150015272_owner-assigned-fk.resx">
+      <DependentUpon>202407150015272_owner-assigned-fk.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202407150031000_owner-created-fk.resx">
+      <DependentUpon>202407150031000_owner-created-fk.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

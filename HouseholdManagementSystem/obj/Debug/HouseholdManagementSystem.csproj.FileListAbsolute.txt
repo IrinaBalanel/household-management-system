@@ -122,3 +122,5 @@ C:\Users\andre\source\repos\household-management-system\HouseholdManagementSyste
 C:\Users\andre\source\repos\household-management-system\HouseholdManagementSystem\obj\Debug\HouseholdManagementSystem.Migrations.todostatus.resources
 C:\Users\andre\source\repos\household-management-system\HouseholdManagementSystem\obj\Debug\HouseholdManagementSystem.Migrations.todoitem.resources
 C:\Users\andre\source\repos\household-management-system\HouseholdManagementSystem\obj\Debug\HouseholdManagementSystem.Migrations.statusfk.resources
+C:\Users\andre\source\repos\household-management-system\HouseholdManagementSystem\obj\Debug\HouseholdManagementSystem.Migrations.ownerassignedfk.resources
+C:\Users\andre\source\repos\household-management-system\HouseholdManagementSystem\obj\Debug\HouseholdManagementSystem.Migrations.ownercreatedfk.resources
