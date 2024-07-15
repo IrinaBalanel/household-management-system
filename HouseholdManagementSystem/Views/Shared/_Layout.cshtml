@@ -6,6 +6,7 @@
     <title>@ViewBag.Title - My ASP.NET Application</title>
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
+@*    @Styles.Render("~/Content/styles.css")*@
 
 </head>
 <body>
@@ -19,8 +20,11 @@
             <div class="collapse navbar-collapse d-sm-inline-flex justify-content-between">
                 <ul class="navbar-nav flex-grow-1">
                     <li>@Html.ActionLink("Home", "Index", "Home", new { area = "" }, new { @class = "nav-link" })</li>
-                    <li>@Html.ActionLink("About", "About", "Home", new { area = "" }, new { @class = "nav-link" })</li>
-                    <li>@Html.ActionLink("Contact", "Contact", "Home", new { area = "" }, new { @class = "nav-link" })</li>
+                    <li>@Html.ActionLink("Chores", "List", "Chore", new { area = "" }, new { @class = "nav-link" })</li>
+                    <li>@Html.ActionLink("Owners", "List", "Owner", new { area = "" }, new { @class = "nav-link" })</li>
+                    <li>@Html.ActionLink("Rooms", "List", "Room", new { area = "" }, new { @class = "nav-link" })</li>
+                    @*                    <li>@Html.ActionLink("About", "About", "Home", new { area = "" }, new { @class = "nav-link" })</li>
+        <li>@Html.ActionLink("Contact", "Contact", "Home", new { area = "" }, new { @class = "nav-link" })</li>*@
                 </ul>
                  @Html.Partial("_LoginPartial")
             </div>
