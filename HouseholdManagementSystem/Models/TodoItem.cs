@@ -21,6 +21,14 @@ namespace HouseholdManagementSystem.Models
         [ForeignKey("CreatedBy")]
         public int CreatedByOwnerId { get; set; }
         public virtual Owner CreatedBy { get; set; }
+
+        [ForeignKey("Category")]
+        public int CategoryId { get; set; }
+        public virtual Category Category { get; set; }
+
+        //TransactionId is a nullable integer
+        public int? TransactionId { get; set; }
+        public virtual Transaction Transaction { get; set; }
     }
 
     //Data transfer object for TodoItem
@@ -34,5 +42,8 @@ namespace HouseholdManagementSystem.Models
         public string AssignedTo { get; set; }
         public int CreatedByOwnerId { get; set; }
         public string CreatedBy { get; set; }
+        public int CategoryId { get; set; }
+        public string CategoryName { get; set; }
+        public int? TransactionId { get; set; }
     }
 }

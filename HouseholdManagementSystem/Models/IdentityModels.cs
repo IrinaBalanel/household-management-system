@@ -31,10 +31,25 @@ namespace HouseholdManagementSystem.Models
         public DbSet<TodoItem> TodoItems { get; set; }
         public DbSet<TodoItemStatus> TodoItemStatus { get; set; }
 
+        public DbSet<TransactionType> TransactionTypes { get; set; }
+
+        public DbSet<Category> Categories { get; set; }
+
+        public DbSet<Transaction> Transactions { get; set; }
 
         public static ApplicationDbContext Create()
         {
             return new ApplicationDbContext();
+        }
+
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Transaction>()
+                .HasOptional(t => t.TodoItem)
+                .WithOptionalPrincipal(ti => ti.Transaction)
+                .WillCascadeOnDelete(false);
         }
     }
 }
