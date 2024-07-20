@@ -1,6 +1,6 @@
 ﻿@{
     ViewBag.Title = "Error";
-    var backUrl = TempData["BackUrl"] as string ?? Url.Action("TodoItem");
+    var backUrl = TempData["BackUrl"] as string ?? Url.Action("Transaction");
     var errorMessage = TempData["ErrorMessage"] as string ?? "An unexpected error occurred. Please try again later.";
 }
 

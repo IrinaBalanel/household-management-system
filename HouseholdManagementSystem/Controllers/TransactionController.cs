@@ -19,7 +19,7 @@ namespace HouseholdManagementSystem.Controllers
         static TransactionController()
         {
             client = new HttpClient();
-            client.BaseAddress = new Uri("https://localhost:44356/api/");
+            client.BaseAddress = new Uri("https://localhost:44394/api/");
         }
 
         // GET: Transaction

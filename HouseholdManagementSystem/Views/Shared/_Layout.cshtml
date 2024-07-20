@@ -6,7 +6,8 @@
     <title>@ViewBag.Title - My ASP.NET Application</title>
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
-@*    @Styles.Render("~/Content/styles.css")*@
+    @Styles.Render("~/Content/custom.css")
+    @*@Styles.Render("~/Content/styles.css")*@
 
 </head>
 <body>
@@ -19,14 +20,30 @@
             </button>
             <div class="collapse navbar-collapse d-sm-inline-flex justify-content-between">
                 <ul class="navbar-nav flex-grow-1">
-                    <li>@Html.ActionLink("Home", "Index", "Home", new { area = "" }, new { @class = "nav-link" })</li>
-                    <li>@Html.ActionLink("Chores", "List", "Chore", new { area = "" }, new { @class = "nav-link" })</li>
-                    <li>@Html.ActionLink("Owners", "List", "Owner", new { area = "" }, new { @class = "nav-link" })</li>
-                    <li>@Html.ActionLink("Rooms", "List", "Room", new { area = "" }, new { @class = "nav-link" })</li>
-                    @*                    <li>@Html.ActionLink("About", "About", "Home", new { area = "" }, new { @class = "nav-link" })</li>
-        <li>@Html.ActionLink("Contact", "Contact", "Home", new { area = "" }, new { @class = "nav-link" })</li>*@
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarCleaningDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Cleaning
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarCleaningDropdown">
+                            <li>@Html.ActionLink("Home", "Index", "Home", new { area = "" }, new { @class = "dropdown-item" })</li>
+                            <li>@Html.ActionLink("Chores", "List", "Chore", new { area = "" }, new { @class = "dropdown-item" })</li>
+                            <li>@Html.ActionLink("Owners", "List", "Owner", new { area = "" }, new { @class = "dropdown-item" })</li>
+                            <li>@Html.ActionLink("Rooms", "List", "Room", new { area = "" }, new { @class = "dropdown-item" })</li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarFinanceDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Finance
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarFinanceDropdown">
+                            <li>@Html.ActionLink("Dashboard", "Index", "Transaction", new { area = "" }, new { @class = "dropdown-item" })</li>
+                            <li>@Html.ActionLink("Expenses", "ListExpenses", "Transaction", new { area = "" }, new { @class = "dropdown-item" })</li>
+                            <li>@Html.ActionLink("Incomes", "ListIncomes", "Transaction", new { area = "" }, new { @class = "dropdown-item" })</li>
+                            <li>@Html.ActionLink("Categories", "ListCategories", "Category", new { area = "" }, new { @class = "dropdown-item" })</li>
+                        </ul>
+                    </li>
                 </ul>
-                 @Html.Partial("_LoginPartial")
+                @Html.Partial("_LoginPartial")
             </div>
         </div>
     </nav>
@@ -39,6 +56,7 @@
     </div>
 
     @Scripts.Render("~/bundles/jquery")
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.6/umd/popper.min.js" integrity="sha512-6UofPqm0QupIL0kzS/UIzekR73/luZdC6i/kXDbWnLOJoqwklBK6519iUnShaYceJ0y4FaiPtX/hRnV/X/xlUQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     @Scripts.Render("~/bundles/bootstrap")
     @RenderSection("scripts", required: false)
 </body>

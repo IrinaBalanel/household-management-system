@@ -203,6 +203,9 @@
     <Compile Include="Controllers\OwnerDataController.cs" />
     <Compile Include="Controllers\RoomController.cs" />
     <Compile Include="Controllers\RoomDataController.cs" />
+    <Compile Include="Controllers\TodoItemController.cs" />
+    <Compile Include="Controllers\TodoItemDataController.cs" />
+    <Compile Include="Controllers\TodoItemStatusDataController.cs" />
     <Compile Include="Controllers\TransactionController.cs" />
     <Compile Include="Controllers\TransactionDataController.cs" />
     <Compile Include="Global.asax.cs">
@@ -288,6 +291,7 @@
     <Compile Include="Models\TodoItemStatus.cs" />
     <Compile Include="Models\Transaction.cs" />
     <Compile Include="Models\TransactionType.cs" />
+    <Compile Include="Models\ViewModels\AddTodoItem.cs" />
     <Compile Include="Models\ViewModels\CategoryTotal.cs" />
     <Compile Include="Models\ViewModels\DetailsChore.cs" />
     <Compile Include="Models\ViewModels\DetailsOwner.cs" />
@@ -318,6 +322,10 @@
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\bootstrap.rtl.css" />
     <Content Include="Content\bootstrap.rtl.min.css" />
+    <Content Include="Content\custom.css" />
+    <Content Include="Content\images\edit_icon.png" />
+    <Content Include="Content\images\filter_icon.png" />
+    <Content Include="Content\images\trash_icon.png" />
     <Content Include="Content\styles.css" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
@@ -426,6 +434,9 @@
     <Content Include="Views\Transaction\ListIncomes.cshtml" />
     <Content Include="Views\Transaction\ListExpenses.cshtml" />
     <Content Include="Views\Transaction\Index.cshtml" />
+    <Content Include="Views\TodoItem\NewTodoItem.cshtml" />
+    <Content Include="Views\TodoItem\ListTodoItems.cshtml" />
+    <Content Include="Views\TodoItem\Error.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

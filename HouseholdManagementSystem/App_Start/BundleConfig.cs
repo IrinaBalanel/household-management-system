@@ -19,6 +19,10 @@ namespace HouseholdManagementSystem
             bundles.Add(new ScriptBundle("~/bundles/modernizr").Include(
                         "~/Scripts/modernizr-*"));
 
+            // Include Popper.js for Bootstrap 5
+            bundles.Add(new ScriptBundle("~/bundles/popper").Include(
+                        "~/Scripts/umd/popper.min.js"));
+
             bundles.Add(new Bundle("~/bundles/bootstrap").Include(
                       "~/Scripts/bootstrap.js"));
 

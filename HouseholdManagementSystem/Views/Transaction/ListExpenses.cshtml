@@ -1,4 +1,4 @@
-﻿@model PersonalFinanceTracker.Models.ViewModels.ListTransactions
+﻿@model HouseholdManagementSystem.Models.ViewModels.ListTransactions
 
 @{
     ViewBag.Title = "List all Expenses";
@@ -30,15 +30,15 @@
         <div class="col-md-12">
             @foreach (var transaction in Model.TransactionList)
             {
-                <div class="card mt-3" style="max-width: 700px; margin: auto;">
+                <div class="custom card mt-3" style="max-width: 700px; margin: auto;">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="d-flex align-items-center">
                                 <div>
-                                    <h5 class="card-title">@transaction.Title</h5>
+                                    <h5 class="custom card-title">@transaction.Title</h5>
                                     <div class="d-flex">
-                                        <p class="card-text me-3">$@transaction.Amount</p>
-                                        <p class="card-text">@transaction.TransactionDate.ToString("dd MMM yyyy")</p>
+                                        <p class="custom card-text me-3">$@transaction.Amount</p>
+                                        <p class="custom card-text">@transaction.TransactionDate.ToString("dd MMM yyyy")</p>
                                     </div>
                                     <button class="btn btn-sm btn-category">@transaction.CategoryName</button>
                                 </div>

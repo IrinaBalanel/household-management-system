@@ -54,6 +54,37 @@ namespace HouseholdManagementSystem.Controllers
         }
 
         /// <summary>
+        /// This method will access the local database to get all the Categories from the Categoriess table
+        /// </summary>
+        /// <example>
+        /// GET api/CategoryData/ListAllCategories
+        /// [{"CategoryId":2,"CategoryName":"Salary","TransactionTypeName":"Income"}]
+        /// </example>
+        /// <returns>Category Objects</returns>        
+        [HttpGet]
+        [ResponseType(typeof(Category))]
+        [Route("api/CategoryData/ListAllCategories")]
+        public IHttpActionResult ListAllCategories()
+        {
+            List<Category> categoryList = db.Categories.ToList();
+
+            List<CategoryDto> categoryDtos = new List<CategoryDto>();
+
+            foreach (var category in categoryList)
+            {
+                CategoryDto categoryDto = new CategoryDto();
+
+                categoryDto.CategoryName = category.CategoryName;
+                categoryDto.CategoryId = category.CategoryId;
+                categoryDto.TransactionTypeName = category.TransactionType.TransactionTypeName;
+                categoryDto.TransactionTypeId = category.TransactionType.TransactionTypeId;
+                categoryDtos.Add(categoryDto);
+            }
+
+            return Ok(categoryDtos);
+        }
+
+        /// <summary>
         /// This api helps add a new Category to the Categories Table in the DB
         /// </summary>
         /// <returns>

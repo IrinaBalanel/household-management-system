@@ -1,0 +1,80 @@
+﻿@model HouseholdManagementSystem.Models.ViewModels.AddTodoItem
+
+@{
+    ViewBag.Title = "Add a Todo Item";
+}
+
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 100vh;">
+    <div class="card p-4" style="width: 100%; max-width: 600px;">
+        <h3 class="text-center mb-4">Add a Todo</h3>
+        <form action="@Url.Action("CreateTodoItem", "TodoItem")" method="POST">
+            <div class="row mb-3">
+                <div class="col-12">
+                    <label for="todoItemDescription" class="form-label">Todo Description</label>
+                    <input type="text" class="form-control" id="todoItemDescription" name="TodoItemDescription" placeholder="Enter the Todo Description" required>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="status" class="form-label">Status</label>
+                    <div class="input-group">
+                        <select id="status" name="StatusId" class="form-select" required>
+                            @foreach (var todoItemStatus in Model.TodoItemStatusDtoList)
+                            {
+                                if (todoItemStatus.Status == Model.pendingStatus.Status)
+                                {
+                                    <option value="@todoItemStatus.StatusId" selected>@todoItemStatus.Status</option>
+                                }
+                                else
+                                {
+                                    <option value="@todoItemStatus.StatusId">@todoItemStatus.Status</option>
+                                }
+
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <label for="category" class="form-label">Category</label>
+                    <select id="category" name="CategoryId" class="form-select" required>
+                        <option value="" selected>Choose Category</option>
+                        @foreach (var category in Model.CategoryList)
+                        {
+                            <option value="@category.CategoryId">@category.CategoryName</option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="assignedTo" class="form-label">Assigned To</label>
+                    <div class="input-group">
+                        <select id="assignedTo" name="AssignedToOwnerId" class="form-select" required>
+                            <option value="" selected>Choose Owner</option>
+                            @foreach (var owner in Model.OwnersList)
+                            {
+                                <option value="@owner.OwnerId">@owner.OwnerName</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <label for="createdBy" class="form-label">Created By</label>
+                    <div class="input-group">
+                        <select id="createdBy" name="CreatedByOwnerId" class="form-select" required>
+                            <option value="" selected>Choose Owner</option>
+                            @foreach (var owner in Model.OwnersList)
+                            {
+                                <option value="@owner.OwnerId">@owner.OwnerName</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center mt-5">
+                <button type="submit" class="btn btn-success">Submit</button>
+            </div>
+        </form>
+    </div>
+</div>
