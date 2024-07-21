@@ -16,18 +16,47 @@ namespace HouseholdManagementSystem.Controllers
         private ApplicationDbContext db = new ApplicationDbContext();
 
         /// <summary>
-        /// This api helps add a new Transaction to the Transactions Table in the DB
+        /// This method will access the local database to get the TodoItem from the TodoItems table for the given Id
         /// </summary>
-        /// <param name="transaction">JSON FORM DATA of a Transaction</param>
+        /// <example>
+        /// GET api/TodoItemData/FindTodoItemById/1 -> {"TodoItemId":1,"TodoItemDescription":"Buy Groceries","StatusId":1,"CategoryId":2,"AssignedToOwnerId":3,"CreatedByOwnerId":4}
+        /// </example>
+        /// <returns>A TodoItem</returns>        
+        [HttpGet]
+        [Route("api/TodoItemData/FindTodoItemById/{todoItemId}")]
+        public IHttpActionResult FindTodoItemById(int todoItemId)
+        {
+            TodoItem todoItem = db.TodoItems.Find(todoItemId);
+            if (todoItem == null)
+            {
+                return NotFound();
+            }
+
+            TodoItemDto todoItemDto = new TodoItemDto();
+
+            todoItemDto.TodoItemId = todoItem.TodoItemId;
+            todoItemDto.TodoItemDescription = todoItem.TodoItemDescription;
+            todoItemDto.StatusId = todoItem.StatusId;
+            todoItemDto.CategoryId = todoItem.CategoryId;
+            todoItemDto.AssignedToOwnerId = todoItem.AssignedToOwnerId;
+            todoItemDto.CreatedByOwnerId = todoItem.CreatedByOwnerId;
+
+            return Ok(todoItemDto);
+        }
+
+        /// <summary>
+        /// This api helps add a new TodoItem to the TodoItems Table in the DB
+        /// </summary>
+        /// <param name="todoItem">JSON FORM DATA of a TodoItem</param>
         /// <returns>
         /// HEADER: 201 (Created)
-        /// CONTENT: TransactionID, Transaction Data
+        /// CONTENT: TodoItemID, TodoItem Data
         /// or
         /// HEADER: 400 (Bad Request)
         /// </returns>
         /// <example>
-        ///curl -d @C:\Users\Ahzi\source\repos\PersonalFinanceTracker\PersonalFinanceTracker\JsonData\Transaction.json -H "Content-Type:application/json" https://localhost:44356/api/TransactionData/addTransaction
-        ///{"TransactionId":9,"Title":"Cheque for freelance software gig","Amount":1000.99,"TransactionDate":"2024-06-03T00:00:00","CategoryId":2,"Category":null}
+        /// curl -d @C:\Users\Ahzi\source\repos\HouseholdManagementSystem\JsonData\TodoItem.json -H "Content-Type:application/json" https://localhost:44356/api/TodoItemData/AddTodoItem
+        /// {"TodoItemId":9,"TodoItemDescription":"Clean the house","StatusId":1,"CategoryId":2,"AssignedToOwnerId":3,"CreatedByOwnerId":4}
         /// </example>
         [ResponseType(typeof(TodoItem))]
         [HttpPost]
@@ -46,10 +75,10 @@ namespace HouseholdManagementSystem.Controllers
         }
 
         /// <summary>
-        /// Updates a particular transaction in the system with PUT Data input
+        /// Updates a particular TodoItem in the system with PUT Data input
         /// </summary>
-        /// <param name="id">Represents the Transaction ID primary key</param>
-        /// <param name="transaction">JSON FORM DATA of a transaction</param>
+        /// <param name="id">Represents the TodoItem ID primary key</param>
+        /// <param name="todoItem">JSON FORM DATA of a TodoItem</param>
         /// <returns>
         /// HEADER: 204 (Success, No Content Response)
         /// or
@@ -58,9 +87,9 @@ namespace HouseholdManagementSystem.Controllers
         /// HEADER: 404 (Not Found)
         /// </returns>
         /// <example>
-        /// PUT: api/TransactionData/UpdateTransaction/5
-        /// FORM DATA: Transaction JSON Object
-        /// curl -X PUT -d @C:\Users\Ahzi\source\repos\PersonalFinanceTracker\PersonalFinanceTracker\JsonData\Transaction.json -H "Content-Type:application/json" https://localhost:44356/api/TransactionData/updateTransaction/2
+        /// PUT: api/TodoItemData/UpdateTodoItem/5
+        /// FORM DATA: TodoItem JSON Object
+        /// curl -X PUT -d @C:\Users\Ahzi\source\repos\HouseholdManagementSystem\JsonData\TodoItem.json -H "Content-Type:application/json" https://localhost:44356/api/TodoItemData/UpdateTodoItem/2
         /// </example>
         [ResponseType(typeof(void))]
         [HttpPut]

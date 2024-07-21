@@ -291,6 +291,7 @@
     <Compile Include="Models\TodoItemStatus.cs" />
     <Compile Include="Models\Transaction.cs" />
     <Compile Include="Models\TransactionType.cs" />
+    <Compile Include="Models\ViewModels\UpdateTodoItem.cs" />
     <Compile Include="Models\ViewModels\AddTodoItem.cs" />
     <Compile Include="Models\ViewModels\CategoryTotal.cs" />
     <Compile Include="Models\ViewModels\DetailsChore.cs" />
@@ -437,6 +438,7 @@
     <Content Include="Views\TodoItem\NewTodoItem.cshtml" />
     <Content Include="Views\TodoItem\ListTodoItems.cshtml" />
     <Content Include="Views\TodoItem\Error.cshtml" />
+    <Content Include="Views\TodoItem\EditTodoItem.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

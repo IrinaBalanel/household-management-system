@@ -28,6 +28,18 @@ namespace HouseholdManagementSystem.Controllers
             return View();
         }
 
+        // GET: TodoItem/ListTodoItems
+        public ActionResult ListTodoItems()
+        {
+            return View();
+        }
+
+        // GET: TodoItem/Error
+        public ActionResult Error()
+        {
+            return View();
+        }
+
         // GET: TodoItem/NewTodoItem
         public ActionResult NewTodoItem()
         {   
@@ -92,12 +104,12 @@ namespace HouseholdManagementSystem.Controllers
 
             if (response.IsSuccessStatusCode)
             {
-                return RedirectToAction("ListTodoItem");
+                return RedirectToAction("ListTodoItems");
             }
             else
             {
                 TempData["ErrorMessage"] = "An error occurred while adding a Todo item. Please try again.";
-                TempData["BackUrl"] = Url.Action("ListTodoItem", "TodoItem");
+                TempData["BackUrl"] = Url.Action("ListTodoItems", "TodoItem");
                 return RedirectToAction("Error");
             }
         }
@@ -105,60 +117,81 @@ namespace HouseholdManagementSystem.Controllers
         // GET: TodoItem/EditTodoItem
         public ActionResult EditTodoItem(int id)
         {
-            UpdateTransaction ViewModel = new UpdateTransaction();
+            UpdateTodoItem ViewModel = new UpdateTodoItem();
 
-            //Get the transaction details with the given transactionid
-            string url = "TransactionData/findTransactionById/" + id;
+            //Get the Todo Item details with the given todoItem Id
+            string url = "TodoItemData/FindTodoItemById/" + id;
             HttpResponseMessage response = client.GetAsync(url).Result;
             if (!response.IsSuccessStatusCode)
             {
-                TempData["ErrorMessage"] = "An error occurred while finding an expense. Please try again.";
-                TempData["BackUrl"] = Url.Action("ListExpenses", "Transaction");
+                TempData["ErrorMessage"] = "An error occurred while finding a Todo Item. Please try again.";
+                TempData["BackUrl"] = Url.Action("ListTodoItems", "TodoItem");
                 return RedirectToAction("Error");
             }
+            TodoItemDto selectedTodoItem = response.Content.ReadAsAsync<TodoItemDto>().Result;
+            ViewModel.SelectedTodoItem = selectedTodoItem;
 
-            TransactionDto selectedTransaction = response.Content.ReadAsAsync<TransactionDto>().Result;
-            ViewModel.SelectedTransaction = selectedTransaction;
-
-            //Get all categories for Expenses to render the dowpdown
-            url = "categoryData/listCategoryByTransactionType?transactionTypeName=Expense";
+            //Get all categories to render the Category dowpdown
+            url = "categoryData/ListAllCategories";
             response = client.GetAsync(url).Result;
             if (!response.IsSuccessStatusCode)
             {
-                TempData["ErrorMessage"] = "An error occurred while listing all expense Categories. Please try again.";
-                TempData["BackUrl"] = Url.Action("ListExpenses", "Transaction");
+                TempData["ErrorMessage"] = "An error occurred when fetching all categories. Please try again.";
+                TempData["BackUrl"] = Url.Action("ListTodoItems", "TodoItem");
                 return RedirectToAction("Error");
             }
 
             IEnumerable<CategoryDto> categories = response.Content.ReadAsAsync<IEnumerable<CategoryDto>>().Result;
+            ViewModel.CategoryList = categories;
 
-            ViewModel.CategoryOptions = categories;
+            //Get all owners for the Assigned To and Created By dowpdowns
+            url = "OwnerData/ListOwners";
+            response = client.GetAsync(url).Result;
+            if (!response.IsSuccessStatusCode)
+            {
+                TempData["ErrorMessage"] = "An error occurred when fetching the list of all owners. Please try again.";
+                TempData["BackUrl"] = Url.Action("ListTodoItems", "TodoItem");
+                return RedirectToAction("Error");
+            }
+
+            IEnumerable<OwnerDto> owners = response.Content.ReadAsAsync<IEnumerable<OwnerDto>>().Result;
+            ViewModel.OwnersList = owners;
+
+            //Get all Todo Item Status for rendering the Status dowpdowns
+            url = "TodoItemStatusData/ListTodoItemStatus";
+            response = client.GetAsync(url).Result;
+            if (!response.IsSuccessStatusCode)
+            {
+                TempData["ErrorMessage"] = "An error occurred when fetching the list of Todo Item Status. Please try again.";
+                TempData["BackUrl"] = Url.Action("ListTodoItems", "TodoItem");
+                return RedirectToAction("Error");
+            }
+
+            IEnumerable<TodoItemStatusDto> todoItemStatuses = response.Content.ReadAsAsync<IEnumerable<TodoItemStatusDto>>().Result;
+            ViewModel.TodoItemStatusDtoList = todoItemStatuses;
 
             return View(ViewModel);
         }
 
         // POST:TodoItem/UpdateTodoItem
         [HttpPost]
-        public ActionResult UpdateTodoItem(int id, Transaction transaction)
+        public ActionResult UpdateTodoItem(int id, TodoItem todoItem)
         {
-            transaction.TransactionDate = DateTime.SpecifyKind(transaction.TransactionDate, DateTimeKind.Utc);
-
-            string url = "TransactionData/UpdateTransaction/" + id;
-            transaction.TransactionId = id;
-            string jsonpayload = jss.Serialize(transaction);
+            string url = "TodoItemData/UpdateTodoItem/" + id;
+            todoItem.TodoItemId = id;
+            string jsonpayload = jss.Serialize(todoItem);
             HttpContent content = new StringContent(jsonpayload);
             content.Headers.ContentType.MediaType = "application/json";
             HttpResponseMessage response = client.PutAsync(url, content).Result;
-            Debug.WriteLine(content);
 
             if (response.IsSuccessStatusCode)
             {
-                return RedirectToAction("ListExpenses");
+                return RedirectToAction("ListTodoItems");
             }
             else
             {
-                TempData["ErrorMessage"] = "An error occurred when updating an expense. Please try again.";
-                TempData["BackUrl"] = Url.Action("ListExpenses", "Transaction");
+                TempData["ErrorMessage"] = "An error occurred while adding a Todo item. Please try again.";
+                TempData["BackUrl"] = Url.Action("ListTodoItems", "TodoItem");
                 return RedirectToAction("Error");
             }
         }

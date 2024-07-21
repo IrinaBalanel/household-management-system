@@ -1,8 +1,7 @@
 ﻿/* custom.css */
 
-/* Background gradient */
 body {
-    background: linear-gradient(to bottom, #f7a440, #f1c060);
+    /*background: linear-gradient(to bottom, #f7a440, #f1c060);*/
     background-attachment: fixed;
     color: #333;
 }

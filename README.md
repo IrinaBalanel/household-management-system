@@ -4,6 +4,49 @@ The Household Management System contains 3 features
 - Household Finance Tracker
 - Todo Items Management
 
+## `Todo Items Management`
+Below are listed down all the Entities, Data Controllers related to the Todo Items Management
+
+## Entities
+
+### TodoItem
+- `TodoItemId` - Primary key
+- `TodoItemDescription` - Description of the todo item
+- `StatusId` - Foreign key to the TodoItemStatus entity
+- `AssignedToOwnerId` - Foreign key to the Owner entity representing the person assigned to the todo item
+- `CreatedByOwnerId` - Foreign key to the Owner entity representing the person who created the todo item
+- `CategoryId` - Foreign key to the Category entity
+- `TransactionId` - Nullable foreign key to the Transaction entity
+
+### TodoItemStatus
+- `StatusId` - Primary key
+- `StatusName` - Name of the status (e.g., Pending, Done)
+
+## Data Controllers
+
+### TodoItemDataController
+
+#### FindTodoItemById
+- **URL**: `api/TodoItemData/FindTodoItemById/{todoItemId}`
+- **Method**: GET
+- **Description**: Retrieves a TodoItem by its ID.
+- **Parameters**: `todoItemId` (int)
+- **Example**: `GET api/TodoItemData/FindTodoItemById/1`
+
+#### AddTodoItem
+- **URL**: `api/TodoItemData/AddTodoItem`
+- **Method**: POST
+- **Description**: Adds a new TodoItem.
+- **Parameters**: `todoItem` (TodoItem JSON object)
+
+#### UpdateTodoItem
+- **URL**: `api/TodoItemData/UpdateTodoItem/{id}`
+- **Method**: PUT
+- **Description**: Updates a particular TodoItem in the system with PUT data input.
+- **Parameters**:
+  - `id` (int)
+  - `todoItem` (TodoItem JSON object)
+
 ## `Household Finance Tracker`
 Below are listed down all the Entities, Data Controllers related to the HouseHold Finance Tracker
 

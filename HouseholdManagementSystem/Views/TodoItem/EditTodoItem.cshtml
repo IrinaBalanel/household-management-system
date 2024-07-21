@@ -1,17 +1,17 @@
-﻿@model HouseholdManagementSystem.Models.ViewModels.AddTodoItem
+﻿@model HouseholdManagementSystem.Models.ViewModels.UpdateTodoItem
 
 @{
-    ViewBag.Title = "Add a Todo Item";
+    ViewBag.Title = "Edit a Todo Item";
 }
 
 <div class="container d-flex justify-content-center align-items-center" style="min-height: 100vh;">
     <div class="card p-4" style="width: 100%; max-width: 600px;">
-        <h3 class="text-center mb-4">Add a To-do Item</h3>
-        <form action="@Url.Action("CreateTodoItem", "TodoItem")" method="POST">
+        <h3 class="text-center mb-4">Update a To-do Item</h3>
+        <form action="@Url.Action("UpdateTodoItem", "TodoItem", new { id = Model.SelectedTodoItem.TodoItemId })" method="POST">
             <div class="row mb-3">
                 <div class="col-12">
                     <label for="todoItemDescription" class="form-label">Todo Description</label>
-                    <input type="text" class="form-control" id="todoItemDescription" name="TodoItemDescription" placeholder="Enter the Todo Description" required>
+                    <input type="text" class="form-control" id="todoItemDescription" name="TodoItemDescription" value="@Model.SelectedTodoItem.TodoItemDescription" required>
                 </div>
             </div>
             <div class="row mb-3">
@@ -21,7 +21,7 @@
                         <select id="status" name="StatusId" class="form-select" required>
                             @foreach (var todoItemStatus in Model.TodoItemStatusDtoList)
                             {
-                                if (todoItemStatus.Status == Model.pendingStatus.Status)
+                                if (todoItemStatus.Status == Model.SelectedTodoItem.Status)
                                 {
                                     <option value="@todoItemStatus.StatusId" selected>@todoItemStatus.Status</option>
                                 }
@@ -40,7 +40,14 @@
                         <option value="" selected>Choose Category</option>
                         @foreach (var category in Model.CategoryList)
                         {
-                            <option value="@category.CategoryId">@category.CategoryName</option>
+                            if (category.CategoryId == Model.SelectedTodoItem.CategoryId)
+                            {
+                                <option value="@category.CategoryId" selected>@category.CategoryName</option>
+                            }
+                            else
+                            {
+                                <option value="@category.CategoryId">@category.CategoryName</option>
+                            }
                         }
                     </select>
                 </div>
@@ -54,7 +61,14 @@
                             <option value="" selected>Choose Owner</option>
                             @foreach (var owner in Model.OwnersList)
                             {
-                                <option value="@owner.OwnerId">@owner.OwnerName</option>
+                                if (owner.OwnerId == Model.SelectedTodoItem.AssignedToOwnerId)
+                                {
+                                    <option value="@owner.OwnerId" selected>@owner.OwnerName</option>
+                                }
+                                else
+                                {
+                                    <option value="@owner.OwnerId">@owner.OwnerName</option>
+                                }
                             }
                         </select>
                     </div>
@@ -66,7 +80,14 @@
                             <option value="" selected>Choose Owner</option>
                             @foreach (var owner in Model.OwnersList)
                             {
-                                <option value="@owner.OwnerId">@owner.OwnerName</option>
+                                if (owner.OwnerId == Model.SelectedTodoItem.CreatedByOwnerId)
+                                {
+                                    <option value="@owner.OwnerId" selected>@owner.OwnerName</option>
+                                }
+                                else
+                                {
+                                    <option value="@owner.OwnerId">@owner.OwnerName</option>
+                                }
                             }
                         </select>
                     </div>
