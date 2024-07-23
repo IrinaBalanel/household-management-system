@@ -2,6 +2,7 @@
 using HouseholdManagementSystem.Models.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.Deployment.Internal;
 using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
@@ -18,8 +19,35 @@ namespace HouseholdManagementSystem.Controllers
 
         static TodoItemController()
         {
-            client = new HttpClient();
+            HttpClientHandler handler = new HttpClientHandler()
+            {
+                AllowAutoRedirect = false,
+                UseCookies = false
+            };
+
+            client = new HttpClient(handler);
             client.BaseAddress = new Uri("https://localhost:44394/api/");
+        }
+
+        /// <summary>
+        /// Gets the authentication cookie sent to this controller
+        /// </summary>
+        private void GetApplicationCookie()
+        {
+            string token = "";
+            //This is a bit dangerous because a previously authenticated cookie could be cached for
+            //a follow-up request from someone else. Reset cookies in HTTP client before grabbing a new one.
+            client.DefaultRequestHeaders.Remove("Cookie");
+            if (!User.Identity.IsAuthenticated) return;
+
+            HttpCookie cookie = System.Web.HttpContext.Current.Request.Cookies.Get(".AspNet.ApplicationCookie");
+            if (cookie != null) token = cookie.Value;
+
+            //collect token
+            //pass along to the WebAPI
+            if (token != "") client.DefaultRequestHeaders.Add("Cookie", ".AspNet.ApplicationCookie=" + token);
+
+            return;
         }
 
         // GET: TodoItem
@@ -31,7 +59,34 @@ namespace HouseholdManagementSystem.Controllers
         // GET: TodoItem/ListTodoItems
         public ActionResult ListTodoItems()
         {
-            return View();
+            string url = "TodoItemData/ListAllTodoItems";
+
+            HttpResponseMessage response = client.GetAsync(url).Result;
+            IEnumerable<TodoItemDto> todoItems = response.Content.ReadAsAsync<IEnumerable<TodoItemDto>>().Result;
+
+            return View(todoItems);
+
+        }
+
+        // POST: TodoItem/DeleteTodoItem/id
+        [Authorize]
+        public ActionResult DeleteTodoItem(int id)
+        {
+            GetApplicationCookie();
+            string url = "TodoItemData/DeleteTodoItem/" + id;
+
+            HttpResponseMessage response = client.DeleteAsync(url).Result;
+            if (response.IsSuccessStatusCode)
+            {
+                return RedirectToAction("ListTodoItems");
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "An error occurred when deleting a To-Do item. Please try again.";
+                TempData["BackUrl"] = Url.Action("ListTodoItems");
+                return RedirectToAction("Error");
+            }
+
         }
 
         // GET: TodoItem/Error
@@ -41,8 +96,10 @@ namespace HouseholdManagementSystem.Controllers
         }
 
         // GET: TodoItem/NewTodoItem
+        [Authorize]
         public ActionResult NewTodoItem()
-        {   
+        {
+            
             AddTodoItem ViewModel = new AddTodoItem();
 
             //Get all categories to render the Category dowpdown
@@ -90,8 +147,10 @@ namespace HouseholdManagementSystem.Controllers
 
         // POST: TodoItem/CreateTodoItem
         [HttpPost]
+        [Authorize]
         public ActionResult CreateTodoItem(TodoItem todoItem)
         {
+            GetApplicationCookie();
             string url = "TodoItemData/AddTodoItem";
 
             string jsonpayload = jss.Serialize(todoItem);
@@ -115,6 +174,7 @@ namespace HouseholdManagementSystem.Controllers
         }
 
         // GET: TodoItem/EditTodoItem
+        [Authorize]
         public ActionResult EditTodoItem(int id)
         {
             UpdateTodoItem ViewModel = new UpdateTodoItem();
@@ -175,8 +235,10 @@ namespace HouseholdManagementSystem.Controllers
 
         // POST:TodoItem/UpdateTodoItem
         [HttpPost]
+        [Authorize]
         public ActionResult UpdateTodoItem(int id, TodoItem todoItem)
         {
+            GetApplicationCookie();
             string url = "TodoItemData/UpdateTodoItem/" + id;
             todoItem.TodoItemId = id;
             string jsonpayload = jss.Serialize(todoItem);

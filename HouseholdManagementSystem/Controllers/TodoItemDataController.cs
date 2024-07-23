@@ -8,12 +8,77 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
+using HouseholdManagementSystem.Migrations;
 
 namespace HouseholdManagementSystem.Controllers
 {
     public class TodoItemDataController : ApiController
     {
         private ApplicationDbContext db = new ApplicationDbContext();
+
+        /// <summary>
+        /// This method will access the local database to get all TodoItems from the TodoItems table
+        /// </summary>
+        /// <example>
+        /// GET: api/TodoItemData/ListAllTodoItems -> [{"TodoItemId":1,"TodoItemDescription":"Buy Groceries","StatusId":1,"CategoryId":2,"AssignedToOwnerId":3,"CreatedByOwnerId":4}, {"TodoItemId":2,"TodoItemDescription":"Pay Rent","StatusId":2,"CategoryId":2,"AssignedToOwnerId":3,"CreatedByOwnerId":4}]
+        /// </example>
+        /// <returns>List of todo items with relevant information to this item</returns> 
+        [ResponseType(typeof(TodoItemDto))]
+        [HttpGet]
+        [Route("api/TodoItemData/ListAllTodoItems")]
+        public IHttpActionResult ListAllTodoItems()
+        {
+            List<TodoItem> todoItems = db.TodoItems
+                .Include(t => t.Status)
+                .Include(t => t.AssignedTo)
+                .Include(t => t.CreatedBy)
+                .Include(t => t.Category)
+                .Include(t => t.Transaction)
+                .ToList();
+            List<TodoItemDto> todoItemDtos = new List<TodoItemDto>();
+
+            todoItems.ForEach(t => todoItemDtos.Add(new TodoItemDto()
+            {
+                TodoItemId = t.TodoItemId,
+                TodoItemDescription = t.TodoItemDescription,
+                Status = t.Status?.Status,
+                CategoryId = t.CategoryId,
+                CategoryName = t.Category?.CategoryName,
+                AssignedToOwnerId = t.AssignedToOwnerId,
+                AssignedTo = t.AssignedTo?.OwnerName,
+                CreatedByOwnerId = t.CreatedByOwnerId,
+                CreatedBy = t.CreatedBy?.OwnerName,
+                TransactionId = t.TransactionId
+            }));
+
+            return Ok(todoItemDtos);
+
+        }
+
+        ///<summary>
+        /// Deletes a todo item from the db by it's ID
+        ///</summary>
+        ///<returns>status 200(Ok) or 404(Not Found)</returns>
+        ///<param name="id">The primary key of the todo item</param>
+        ///<example>
+        ///POST: api/TodoItemData/DeleteTodoItem/8
+        ///</example> 
+        [ResponseType(typeof(TodoItem))]
+        [HttpDelete]
+        [Route("api/TodoItemData/DeleteTodoItem/{id}")]
+        public IHttpActionResult DeleteTodoItem(int id)
+        {
+            TodoItem todoItem = db.TodoItems.Find(id);
+            if (todoItem == null)
+            {
+                return NotFound();
+            }
+
+            db.TodoItems.Remove(todoItem);
+            db.SaveChanges();
+
+            return Ok();
+        }
 
         /// <summary>
         /// This method will access the local database to get the TodoItem from the TodoItems table for the given Id

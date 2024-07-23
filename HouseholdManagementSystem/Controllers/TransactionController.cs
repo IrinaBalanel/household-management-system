@@ -18,8 +18,34 @@ namespace HouseholdManagementSystem.Controllers
 
         static TransactionController()
         {
-            client = new HttpClient();
+            HttpClientHandler handler = new HttpClientHandler()
+            {
+                AllowAutoRedirect = false,
+                UseCookies = false
+            };
+            client = new HttpClient(handler);
             client.BaseAddress = new Uri("https://localhost:44394/api/");
+        }
+
+        /// <summary>
+        /// Gets the authentication cookie sent to this controller
+        /// </summary>
+        private void GetApplicationCookie()
+        {
+            string token = "";
+            //This is a bit dangerous because a previously authenticated cookie could be cached for
+            //a follow-up request from someone else. Reset cookies in HTTP client before grabbing a new one.
+            client.DefaultRequestHeaders.Remove("Cookie");
+            if (!User.Identity.IsAuthenticated) return;
+
+            HttpCookie cookie = System.Web.HttpContext.Current.Request.Cookies.Get(".AspNet.ApplicationCookie");
+            if (cookie != null) token = cookie.Value;
+
+            //collect token
+            //pass along to the WebAPI
+            if (token != "") client.DefaultRequestHeaders.Add("Cookie", ".AspNet.ApplicationCookie=" + token);
+
+            return;
         }
 
         // GET: Transaction
@@ -160,6 +186,7 @@ namespace HouseholdManagementSystem.Controllers
         }
 
         // GET: Transaction/NewExpense
+        [Authorize]
         public ActionResult NewExpense()
         {
             //Get all categories for Expenses to render the dowpdown
@@ -172,6 +199,7 @@ namespace HouseholdManagementSystem.Controllers
         }
 
         // GET: Transaction/NewIncome
+        [Authorize]
         public ActionResult NewIncome()
         {
             //Get all categories for Incomes to render the dowpdown
@@ -185,8 +213,10 @@ namespace HouseholdManagementSystem.Controllers
 
         // POST: Transaction/CreateExpense
         [HttpPost]
+        [Authorize]
         public ActionResult CreateExpense(Transaction transaction)
         {
+            GetApplicationCookie();
             transaction.TransactionDate = DateTime.SpecifyKind(transaction.TransactionDate, DateTimeKind.Utc);
             string url = "TransactionData/AddTransaction";
 
@@ -212,8 +242,10 @@ namespace HouseholdManagementSystem.Controllers
 
         // POST: Transaction/CreateIncome
         [HttpPost]
+        [Authorize]
         public ActionResult CreateIncome(Transaction transaction)
         {
+            GetApplicationCookie();
             transaction.TransactionDate = DateTime.SpecifyKind(transaction.TransactionDate, DateTimeKind.Utc);
 
             string url = "TransactionData/AddTransaction";
@@ -238,6 +270,7 @@ namespace HouseholdManagementSystem.Controllers
         }
 
         // GET: Transaction/EditExpense/5
+        [Authorize]
         public ActionResult EditExpense(int id)
         {
             UpdateTransaction ViewModel = new UpdateTransaction();
@@ -273,6 +306,7 @@ namespace HouseholdManagementSystem.Controllers
         }
 
         // GET: Transaction/EditIncome/5
+        [Authorize]
         public ActionResult EditIncome(int id)
         {
             UpdateTransaction ViewModel = new UpdateTransaction();
@@ -309,8 +343,10 @@ namespace HouseholdManagementSystem.Controllers
 
         // POST: Transaction/UpdateExpense/2
         [HttpPost]
+        [Authorize]
         public ActionResult UpdateExpense(int id, Transaction transaction)
         {
+            GetApplicationCookie();
             transaction.TransactionDate = DateTime.SpecifyKind(transaction.TransactionDate, DateTimeKind.Utc);
 
             string url = "TransactionData/UpdateTransaction/" + id;
@@ -335,8 +371,10 @@ namespace HouseholdManagementSystem.Controllers
 
         // POST: Transaction/UpdateIncome/2
         [HttpPost]
+        [Authorize]
         public ActionResult UpdateIncome(int id, Transaction transaction)
         {
+            GetApplicationCookie();
             transaction.TransactionDate = DateTime.SpecifyKind(transaction.TransactionDate, DateTimeKind.Utc);
 
             string url = "TransactionData/UpdateTransaction/" + id;
@@ -361,8 +399,10 @@ namespace HouseholdManagementSystem.Controllers
 
         // POST: /Transaction/DeleteExpense/id
         [HttpPost]
+        [Authorize]
         public ActionResult DeleteExpense(int id)
         {
+            GetApplicationCookie();
             string url = "TransactionData/DeleteTransaction/" + id;
 
             HttpResponseMessage response = client.DeleteAsync(url).Result;
@@ -381,8 +421,10 @@ namespace HouseholdManagementSystem.Controllers
 
         // POST: /Transaction/DeleteIncome/id
         [HttpPost]
+        [Authorize]
         public ActionResult DeleteIncome(int id)
         {
+            GetApplicationCookie();
             string url = "TransactionData/DeleteTransaction" + id;
 
             HttpResponseMessage response = client.DeleteAsync(url).Result;

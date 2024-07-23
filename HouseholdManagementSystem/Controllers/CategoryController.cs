@@ -18,8 +18,34 @@ namespace HouseholdManagementSystem.Controllers
 
         static CategoryController()
         {
-            client = new HttpClient();
+            HttpClientHandler handler = new HttpClientHandler()
+            {
+                AllowAutoRedirect = false,
+                UseCookies = false
+            };
+            client = new HttpClient(handler);
             client.BaseAddress = new Uri("https://localhost:44394/api/");
+        }
+
+        /// <summary>
+        /// Gets the authentication cookie sent to this controller
+        /// </summary>
+        private void GetApplicationCookie()
+        {
+            string token = "";
+            //This is a bit dangerous because a previously authenticated cookie could be cached for
+            //a follow-up request from someone else. Reset cookies in HTTP client before grabbing a new one.
+            client.DefaultRequestHeaders.Remove("Cookie");
+            if (!User.Identity.IsAuthenticated) return;
+
+            HttpCookie cookie = System.Web.HttpContext.Current.Request.Cookies.Get(".AspNet.ApplicationCookie");
+            if (cookie != null) token = cookie.Value;
+
+            //collect token
+            //pass along to the WebAPI
+            if (token != "") client.DefaultRequestHeaders.Add("Cookie", ".AspNet.ApplicationCookie=" + token);
+
+            return;
         }
 
         // GET: Category
@@ -54,8 +80,10 @@ namespace HouseholdManagementSystem.Controllers
 
         // POST: Category/AddCategory
         [HttpPost]
+        [Authorize]
         public ActionResult AddCategory(Category category)
         {
+            GetApplicationCookie();
             string url = "CategoryData/addCategory";
 
             string jsonpayload = jss.Serialize(category);
@@ -78,8 +106,10 @@ namespace HouseholdManagementSystem.Controllers
 
         // POST: Category/UpdateCategory
         [HttpPost]
+        [Authorize]
         public ActionResult UpdateCategory(Category category)
         {
+            GetApplicationCookie();
             string url = $"CategoryData/updateCategory/{category.CategoryId}";
             string jsonpayload = jss.Serialize(category);
 
@@ -100,8 +130,10 @@ namespace HouseholdManagementSystem.Controllers
 
         // POST: Category/DeleteCategory
         [HttpPost]
+        [Authorize]
         public ActionResult DeleteCategory(int categoryId)
         {
+            GetApplicationCookie();
             string url = $"CategoryData/deleteCategory/{categoryId}";
             HttpResponseMessage response = client.DeleteAsync(url).Result;
             if (response.IsSuccessStatusCode)

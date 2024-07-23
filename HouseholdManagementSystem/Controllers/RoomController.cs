@@ -79,7 +79,7 @@ namespace HouseholdManagementSystem.Controllers
             ViewModel.SelectedRoom = SelectedRoom;
 
             //show all related chores to this particular room
-            url = "listchoresforroom/" + id;
+            url = "choredata/listchoresforroom/" + id;
             response = client.GetAsync(url).Result;
             IEnumerable<ChoreDto> RelatedChores = response.Content.ReadAsAsync<IEnumerable<ChoreDto>>().Result;
             ViewModel.RelatedChores = RelatedChores;
