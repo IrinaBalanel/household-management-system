@@ -38,7 +38,6 @@ Below are listed down all the Entities, Data Controllers related to the Todo Ite
 - **Method**: GET
 - **Description**: Retrieves a list of all todo items. Optionally filters todo items by:
 - **Parameters**:
-  - `currentMonth` (optional, bool)
   - `status` (string)
   - `categoryName` (string)
   - `assignedToOwner` (string)
