@@ -9,6 +9,7 @@ using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
 using HouseholdManagementSystem.Migrations;
+using System.Collections;
 
 namespace HouseholdManagementSystem.Controllers
 {
@@ -23,33 +24,102 @@ namespace HouseholdManagementSystem.Controllers
         /// GET: api/TodoItemData/ListAllTodoItems -> [{"TodoItemId":1,"TodoItemDescription":"Buy Groceries","StatusId":1,"CategoryId":2,"AssignedToOwnerId":3,"CreatedByOwnerId":4}, {"TodoItemId":2,"TodoItemDescription":"Pay Rent","StatusId":2,"CategoryId":2,"AssignedToOwnerId":3,"CreatedByOwnerId":4}]
         /// </example>
         /// <returns>List of todo items with relevant information to this item</returns> 
+        /*        [ResponseType(typeof(TodoItemDto))]
+                [HttpGet]
+                [Route("api/TodoItemData/ListAllTodoItems")]
+                public IHttpActionResult ListAllTodoItems()
+                {
+                    List<TodoItem> todoItems = db.TodoItems
+                        .Include(t => t.Status)
+                        .Include(t => t.AssignedTo)
+                        .Include(t => t.CreatedBy)
+                        .Include(t => t.Category)
+                        .Include(t => t.Transaction)
+                        .ToList();
+                    List<TodoItemDto> todoItemDtos = new List<TodoItemDto>();
+
+                    todoItems.ForEach(t => todoItemDtos.Add(new TodoItemDto()
+                    {
+                        TodoItemId = t.TodoItemId,
+                        TodoItemDescription = t.TodoItemDescription,
+                        Status = t.Status?.Status,
+                        CategoryId = t.CategoryId,
+                        CategoryName = t.Category?.CategoryName,
+                        AssignedToOwnerId = t.AssignedToOwnerId,
+                        AssignedTo = t.AssignedTo?.OwnerName,
+                        CreatedByOwnerId = t.CreatedByOwnerId,
+                        CreatedBy = t.CreatedBy?.OwnerName,
+                        TransactionId = t.TransactionId
+                    }));
+
+                    return Ok(todoItemDtos);
+
+                }*/
+
+        /// <summary>
+        /// This method will access the local database to get TodoItems from the TodoItems table that match the filters provided as query parameters
+        /// Filter Types:
+        /// 1. Status
+        /// 2. Category Name
+        /// 3. Assigned To
+        /// 4. Created By
+        /// </summary>
+        /// <example>
+        /// GET api/TodoItemData/ListAllTodoItems -> [{"TodoItemId":1,"TodoItemDescription":"Buy Groceries","StatusId":1,"CategoryId":2,"AssignedToOwnerId":3,"CreatedByOwnerId":4}, {"TodoItemId":2,"TodoItemDescription":"Pay Rent","StatusId":2,"CategoryId":2,"AssignedToOwnerId":3,"CreatedByOwnerId":4}]
+        /// Find by Status: GET /api/TodoItem/ListTodoItems?status=Pending
+        /// Find by Category Name: GET /api/TodoItem/ListTodoItems?categoryName=Rent
+        /// Find by Assigned To: GET /api/TodoItem/ListTodoItems?assignedToOwner=Irina
+        /// Find by Created By: GET /api/TodoItem/ListTodoItems?createdByOwner=Mom
+        /// </example>
+        /// <returns>A list of all Transactions that match the filter</returns>
         [ResponseType(typeof(TodoItemDto))]
         [HttpGet]
         [Route("api/TodoItemData/ListAllTodoItems")]
-        public IHttpActionResult ListAllTodoItems()
+        public IHttpActionResult ListAllTodoItems([FromUri] string status = null, [FromUri] string categoryName = null, [FromUri] string assignedToOwner = null, [FromUri] string createdByOwner = null)
         {
-            List<TodoItem> todoItems = db.TodoItems
-                .Include(t => t.Status)
-                .Include(t => t.AssignedTo)
-                .Include(t => t.CreatedBy)
-                .Include(t => t.Category)
-                .Include(t => t.Transaction)
-                .ToList();
-            List<TodoItemDto> todoItemDtos = new List<TodoItemDto>();
+            var query = db.TodoItems.AsQueryable();
 
-            todoItems.ForEach(t => todoItemDtos.Add(new TodoItemDto()
+            if (!string.IsNullOrEmpty(status))
             {
-                TodoItemId = t.TodoItemId,
-                TodoItemDescription = t.TodoItemDescription,
-                Status = t.Status?.Status,
-                CategoryId = t.CategoryId,
-                CategoryName = t.Category?.CategoryName,
-                AssignedToOwnerId = t.AssignedToOwnerId,
-                AssignedTo = t.AssignedTo?.OwnerName,
-                CreatedByOwnerId = t.CreatedByOwnerId,
-                CreatedBy = t.CreatedBy?.OwnerName,
-                TransactionId = t.TransactionId
-            }));
+                query = query.Where(t => t.Status.Status.Equals(status, StringComparison.OrdinalIgnoreCase));
+            }
+            if (!string.IsNullOrEmpty(categoryName))
+            {
+                query = query.Where(t => t.Category.CategoryName.Equals(categoryName, StringComparison.OrdinalIgnoreCase));
+            }
+
+            if (!string.IsNullOrEmpty(assignedToOwner))
+            {
+                query = query.Where(t => t.AssignedTo.OwnerName.Equals(assignedToOwner, StringComparison.OrdinalIgnoreCase));
+            }
+
+            if (!string.IsNullOrEmpty(createdByOwner))
+            {
+                query = query.Where(t => t.CreatedBy.OwnerName.Equals(createdByOwner, StringComparison.OrdinalIgnoreCase));
+            }
+
+            var todoItemList = query.ToList();
+
+            List<TodoItemDto> todoItemDtos = new List<TodoItemDto>();
+            foreach (var todoItem in todoItemList)
+            {
+                var todoItemDto = new TodoItemDto
+                {
+                    TodoItemId = todoItem.TodoItemId,
+                    TodoItemDescription = todoItem.TodoItemDescription,
+                    StatusId = todoItem.StatusId,
+                    Status = todoItem.Status.Status,
+                    CategoryId = todoItem.CategoryId,
+                    CategoryName = todoItem.Category.CategoryName,
+                    AssignedToOwnerId = todoItem.AssignedToOwnerId,
+                    AssignedTo = todoItem.AssignedTo.OwnerName,
+                    CreatedByOwnerId = todoItem.CreatedByOwnerId,
+                    CreatedBy = todoItem.CreatedBy.OwnerName,
+                    TransactionId = todoItem.TransactionId
+                };
+
+                todoItemDtos.Add(todoItemDto);
+            }
 
             return Ok(todoItemDtos);
 
@@ -74,11 +144,19 @@ namespace HouseholdManagementSystem.Controllers
                 return NotFound();
             }
 
+            bool hasAssociatedTransaction = db.TodoItems.Any(t => t.TransactionId == todoItem.TransactionId);
+            if (hasAssociatedTransaction)
+            {
+                return Content(HttpStatusCode.Conflict, "This To-Do item cannot be deleted as it has associated Transactions");
+            }
+
             db.TodoItems.Remove(todoItem);
             db.SaveChanges();
 
-            return Ok();
+            return Ok(todoItem);
         }
+
+
 
         /// <summary>
         /// This method will access the local database to get the TodoItem from the TodoItems table for the given Id

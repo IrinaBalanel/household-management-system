@@ -1,4 +1,4 @@
-﻿@model IEnumerable<HouseholdManagementSystem.Models.TodoItemDto>
+﻿@model HouseholdManagementSystem.Models.ViewModels.FilterTodoItems
 @{
     ViewBag.Title = "List Todo Items";
 }
@@ -9,34 +9,34 @@
         <div class="d-flex align-items-center">
             <img src="~/Content/images/filter_icon.png" alt="A funnel shaped icon">
             <span class="filter-by-text ms-2">Filter By</span>
-            @*            <select class="form-select ms-2 select-primary" style="width: auto;" id="categoryDropdown" onchange="location = this.value;">
-            <option selected disabled>Status</option>
-            @foreach (var status in Model.StatusList)
-            {
-                <option value="@Url.Action("ListExpenses", "Transaction", new { categoryName = category.CategoryName })" @(Model.SelectedCategory == category.CategoryName ? "selected" : "")>@category.CategoryName</option>
-            }
-        </select>*@
-            @*            <select class="form-select ms-2 select-primary" style="width: auto;" id="categoryDropdown" onchange="location = this.value;">
-            <option selected disabled>Category</option>
-            @foreach (var category in Model.CategoryList)
-            {
-                <option value="@Url.Action("ListExpenses", "Transaction", new { categoryName = category.CategoryName })" @(Model.SelectedCategory == category.CategoryName ? "selected" : "")>@category.CategoryName</option>
-            }
-        </select>*@
-            @*            <select class="form-select ms-2 select-primary" style="width: auto;" id="categoryDropdown" onchange="location = this.value;">
-            <option selected disabled>Assigned To</option>
-            @foreach (var owner in Model.OwnerList)
-            {
-                <option value="@Url.Action("ListExpenses", "Transaction", new { categoryName = category.CategoryName })" @(Model.SelectedCategory == category.CategoryName ? "selected" : "")>@category.CategoryName</option>
-            }
-        </select>*@
-            @*            <select class="form-select ms-2 select-primary" style="width: auto;" id="categoryDropdown" onchange="location = this.value;">
-            <option selected disabled>Created By</option>
-            @foreach (var owner in Model.OwnerList)
-            {
-                <option value="@Url.Action("ListExpenses", "Transaction", new { categoryName = category.CategoryName })" @(Model.SelectedCategory == category.CategoryName ? "selected" : "")>@category.CategoryName</option>
-            }
-        </select>*@
+            <select class="form-select ms-2 select-primary" style="width: auto;" id="statusDropdown" onchange="location = this.value;">
+                <option selected disabled>Status</option>
+                @foreach (var status in Model.StatusList)
+                {
+                    <option value="@Url.Action("ListTodoItems", "TodoItem", new { status = status.Status })" @(Model.SelectedStatus == status.Status ? "selected" : "")>@status.Status</option>
+                }
+            </select>
+            <select class="form-select ms-2 select-primary" style="width: auto;" id="categoryDropdown" onchange="location = this.value;">
+                <option selected disabled>Category</option>
+                @foreach (var category in Model.CategoryList)
+                {
+                    <option value="@Url.Action("ListTodoItems", "TodoItem", new { categoryName = category.CategoryName })" @(Model.SelectedCategory == category.CategoryName ? "selected" : "")>@category.CategoryName</option>
+                }
+            </select>
+            <select class="form-select ms-2 select-primary" style="width: auto;" id="assignedDropdown" onchange="location = this.value;">
+                <option selected disabled>Assigned To</option>
+                @foreach (var assignedtoowner in Model.AssignedToOwnersList)
+                {
+                    <option value="@Url.Action("ListTodoItems", "TodoItem", new { assignedToOwner = assignedtoowner.OwnerName })" @(Model.SelectedAssignedToOwner == assignedtoowner.OwnerName ? "selected" : "")>@assignedtoowner.OwnerName</option>
+                }
+            </select>
+            <select class="form-select ms-2 select-primary" style="width: auto;" id="createdDropdown" onchange="location = this.value;">
+                <option selected disabled>Created By</option>
+                @foreach (var createdbyowner in Model.CreatedByOwnersList)
+                {
+                    <option value="@Url.Action("ListTodoItems", "TodoItem", new { createdByOwner = createdbyowner.OwnerName })" @(Model.SelectedCreatedByOwner == createdbyowner.OwnerName ? "selected" : "")>@createdbyowner.OwnerName</option>
+                }
+            </select>
         </div>
         <a href="/TodoItem/NewTodoItem" class="btn btn-danger" role="button">+ New To-Do Item</a>
     </div>
@@ -44,19 +44,19 @@
 
 <div class="row">
     <div class="col-md-12">
-        @foreach (var todoitem in Model)
-        {
-            <div class="custom card mt-3" style="max-width: 1000px; margin: auto;">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h5 class="custom card-title">Description</h5>
-                        <h5 class="custom card-title">Status</h5>
-                        <h5 class="custom card-title">Category</h5>
-                        <h5 class="custom card-title">Assigned To</h5>
-                        <h5 class="custom card-title">Created By</h5>
-                        <h5 class="custom card-title">Actions</h5>
-                    </div>
-                    <hr />
+        <div class="custom card mt-3" style="max-width: 1000px; margin: auto;">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="custom card-title">Description</h5>
+                    <h5 class="custom card-title">Status</h5>
+                    <h5 class="custom card-title">Category</h5>
+                    <h5 class="custom card-title">Assigned To</h5>
+                    <h5 class="custom card-title">Created By</h5>
+                    <h5 class="custom card-title">Actions</h5>
+                </div>
+                <hr />
+                @foreach (var todoitem in Model.TodoItemsList)
+                {
                     <div class="d-flex justify-content-between align-items-center">
                         <h5 class="custom card-title">@todoitem.TodoItemDescription</h5>
                         <p class="custom card-text">@todoitem.Status</p>
@@ -64,7 +64,7 @@
                         <p class="custom card-title">@todoitem.AssignedTo</p>
                         <p class="custom card-title">@todoitem.CreatedBy</p>
                         <div>
-                            <a href="/TodoItem/EditTodoItem/@todoitem.TransactionId" class="btn btn-outline-primary" role="button">
+                            <a href="@Url.Action("ListExpenses", "Transaction", new { transactionId = todoitem.TransactionId })" class="btn btn-outline-primary" role="button">
                                 <img src="~/Content/images/coin.png" alt="A dollar icon" class="size">
                             </a>
                             <a href="/TodoItem/EditTodoItem/@todoitem.TodoItemId" class="btn btn-outline-primary" role="button">
@@ -75,9 +75,10 @@
                             </a>
                         </div>
                     </div>
-                </div>
+                }
+
             </div>
-        }
+        </div>
     </div>
 </div>
 

@@ -14,13 +14,13 @@ namespace HouseholdManagementSystem.Controllers
         private ApplicationDbContext db = new ApplicationDbContext();
 
         /// <summary>
-        /// This method will access the local database to get all the Categories from the Categoriess table for a TransactionTypeName
+        /// This method will access the local database to get the list of status names of the todo items
         /// </summary>
         /// <example>
-        /// GET api/CategoryData/listCategoryByTransactionType?transactionTypeName=Income
-        /// [{"CategoryId":2,"CategoryName":"Salary","TransactionTypeName":"Income"}]
+        /// GET api/TodoItemStatusData/ListTodoItemStatus
+        /// [{"StatusId":1,"Status":"Pendng"},{"StatusId":2, "Status": "Done"}]
         /// </example>
-        /// <returns>Category Objects</returns>        
+        /// <returns>Status Objects</returns>        
         [HttpGet]
         [ResponseType(typeof(TodoItemStatus))]
         [Route("api/TodoItemStatusData/ListTodoItemStatus")]

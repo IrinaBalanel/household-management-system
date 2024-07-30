@@ -25,4 +25,10 @@
             <li><a href="/Chore/Show/@chore.ChoreId">@chore.ChoreName</a></li>
         }
     </ul>
+    <div>
+        <a href="@Url.Action("ListTodoItems", "TodoItem", new { ownerName = Model.SelectedOwner.OwnerName,  filterType = "assigned" })">View assigned To-Dos</a>
+    </div>
+    <div>
+        <a href="@Url.Action("ListTodoItems", "TodoItem", new { ownerName = Model.SelectedOwner.OwnerName, filterType = "created" })">View my created To-Dos</a>
+    </div>
 </div>

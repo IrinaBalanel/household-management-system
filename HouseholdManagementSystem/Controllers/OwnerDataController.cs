@@ -128,10 +128,16 @@ namespace HouseholdManagementSystem.Controllers
                 return NotFound();
             }
 
+            bool hasAssignedItems = db.TodoItems.Any(t=> t.AssignedToOwnerId == owner.OwnerId);
+            if (hasAssignedItems)
+            {
+                return Content(HttpStatusCode.Conflict, "You cannot delete this owner. This owner has assigned tasks");
+            }
+
             db.Owners.Remove(owner);
             db.SaveChanges();
 
-            return Ok();
+            return Ok(owner);
         }
 
 
