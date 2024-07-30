@@ -1,8 +1,8 @@
 # Household Management System
 The Household Management System contains 3 features
-- Household Cleaning Pipeline
-- Household Finance Tracker
 - Todo Items Management
+- Household Finance Tracker
+- Household Cleaning Pipeline
 
 ## `Todo Items Management`
 Below are listed down all the Entities, Data Controllers related to the Todo Items Management
@@ -24,7 +24,30 @@ Below are listed down all the Entities, Data Controllers related to the Todo Ite
 
 ## Data Controllers
 
+### TodoItemStatusDataController
+
+#### ListTodoItemStatus
+- **URL**: `api/TodoItemStatusData/ListTodoItemStatus`
+- **Method**: GET
+- **Description**: Retrieves a list of all status names of the todo items.
+
 ### TodoItemDataController
+
+#### ListAllTodoItems
+- **URL**: `api/TodoItemData/ListAllTodoItems`
+- **Method**: GET
+- **Description**: Retrieves a list of all todo items. Optionally filters todo items by:
+- **Parameters**:
+  - `currentMonth` (optional, bool)
+  - `status` (string)
+  - `categoryName` (string)
+  - `assignedToOwner` (string)
+  - `createdByOwner` (string)
+- **Examples**:
+  - `/api/TodoItem/ListTodoItems?status=Pending`
+  - `/api/TodoItem/ListTodoItems?categoryName=Rent`
+  - `/api/TodoItem/ListTodoItems?assignedToOwner=Irina`
+  - `/api/TodoItem/ListTodoItems?createdByOwner=Mom`
 
 #### FindTodoItemById
 - **URL**: `api/TodoItemData/FindTodoItemById/{todoItemId}`
@@ -46,6 +69,14 @@ Below are listed down all the Entities, Data Controllers related to the Todo Ite
 - **Parameters**:
   - `id` (int)
   - `todoItem` (TodoItem JSON object)
+
+#### DeleteTodoItem
+- **URL**: `api/TodoItemData/DeleteTodoItem/{id}`
+- **Method**: DELETE
+- **Description**: Deletes a todo item from the system by its ID.
+- **Parameters**: `id` (int)
+- **Returns**: If the todo item has associated transaction, returns a `409 Conflict` status with a message indicating the todo item cannot be deleted.
+
 
 ## `Household Finance Tracker`
 Below are listed down all the Entities, Data Controllers related to the HouseHold Finance Tracker
@@ -155,6 +186,146 @@ Below are listed down all the Entities, Data Controllers related to the HouseHol
 - **Description**: Deletes a category from the system by its ID.
 - **Parameters**: `id` (int)
 - **Returns**: If the category has associated transactions, returns a `409 Conflict` status with a message indicating the category cannot be deleted.
+
+## `Household Cleaning Pipeline`
+Below are listed down all the Entities, Data Controllers related to the Household Cleaning Pipeline
+
+## Entities
+
+### Chore
+- `ChoreId` - Primary key
+- `ChoreDescription` - Description of the chore
+- `ChoreFrequency` - How often the chore must be done (e.g., Daily, Weekly, etc.)
+- `RoomId` - Foreign key to the Room entity
+- `OwnerId` - Foreign key to the Owner entity
+
+### Owner
+- `OwnerId` - Primary key
+- `OwnerName` - Name of the owner
+- `OwnerAvailability` - Day of the week, available for doing chores (e.g., Daily, Weekly, etc.)
+
+### Room
+- `RoomId` - Primary key
+- `Room` - Name of the area in the apartment/house
+
+## Data Controllers
+
+### ChoreDataController
+#### ListChoresForOwner
+- **URL**: `api/ChoreData/ListChoresForOwner/{id}`
+- **Method**: GET
+- **Description**: Reflects information about all chores related to a particular owner by its ID
+- **Parameters**: `id` (int)
+- **Example**: `api/ChoreData/ListChoresForOwner/1`
+
+#### ListChoresForRoom
+- **URL**: `api/ChoreData/ListChoresForRoom/{id}`
+- **Method**: GET
+- **Description**: Reflects information about all chores related to a particular room by its ID
+- **Parameters**: `id` (int)
+- **Example**: `api/ChoreData/ListChoresForRoom/1`
+
+#### AssignChoreToRoom
+- **URL**: `api/ChoreData/AssignChoreToRoom/{ChoreId}/{RoomId}`
+- **Method**: POST
+- **Description**: Assigns a particular chore to a particular room by their IDs
+- **Parameters**:
+  - `ChoreId` (int)
+  - `RoomId` (int)
+- **Example**: `api/ChoreData/AssignChoreToRoom/20/3`
+
+#### UnassignChoreFromRoom
+- **URL**: `api/ChoreData/UnAssignChoreFromRoom/{ChoreId}/{RoomId}`
+- **Method**: POST
+- **Description**: Unassign a particular chore from a particular room by their IDs
+- **Parameters**:
+  - `ChoreId` (int)
+  - `RoomId` (int)
+- **Example**: `api/ChoreData/UnAssignChoreFromRoom/20/3`
+
+### OwnerDataController
+#### ListOwners
+- **URL**: `api/OwnerData/ListOwners`
+- **Method**: GET
+- **Description**: Retrieves a list of all owners.
+
+#### FindOwner
+- **URL**: `api/OwnerData/FindOwner/{id}`
+- **Method**: GET
+- **Description**: Finds an owner by owner ID and outputs information associated with this specific owner
+- **Parameters**: `id` (int)
+- **Example**: `api/OwnerData/FindOwner/1`
+
+#### AddOwner
+- **URL**: `api/OwnerData/AddOwner`
+- **Method**: POST
+- **Description**: Adds an owner to the db
+- **Example**: `api/OwnerData/AddOwner`
+- **Parameters**: `owner` (Owner JSON object)
+
+#### UpdateOwner
+- **URL**: `api/OwnerData/UpdateOwner/{id}`
+- **Method**: POST
+- **Description**: Updates an owner by it's ID
+- **Parameters**:
+  - `id` (int)
+  - `owner` (Owner JSON object)
+
+#### DeleteOwner
+- **URL**: `api/OwnerData/DeleteOwner/{id}`
+- **Method**: POST
+- **Description**: Deletes an owner from the system by its ID.
+- **Parameters**: `id` (int)
+- **Returns**: If the owner has associated todo items, returns a `409 Conflict` status with a message indicating the owner cannot be deleted.
+
+### RoomDataController
+#### ListRooms
+- **URL**: `api/RoomData/ListRooms`
+- **Method**: GET
+- **Description**: Retrieves a list of all rooms.
+
+#### ListRoomsForChore
+- **URL**: `api/RoomData/ListRoomsForChore/{id}`
+- **Method**: GET
+- **Description**: Retrieves rooms for a particular chore by its ID
+- **Parameters**: `id` (int)
+- **Example**: `api/RoomData/ListRoomsForChore/1`
+
+#### ListRoomsNotForChore
+- **URL**: `api/RoomData/ListRoomsNotForChore/{id}`
+- **Method**: GET
+- **Description**: Lists rooms which are not associated with this particular chore by its ID
+- **Parameters**: `id` (int)
+- **Example**: `api/RoomData/ListRoomsNotForChore/1`
+
+#### FindRoom
+- **URL**: `api/RoomData/FindRoom/{id}`
+- **Method**: GET
+- **Description**: Finds a room by room ID and outputs information associated with this specific room
+- **Parameters**: `id` (int)
+- **Example**: `api/RoomData/FindRoom/1`
+
+#### AddRoom
+- **URL**: `api/RoomData/AddRoom`
+- **Method**: POST
+- **Description**: Adds a room to the db
+- **Example**: `api/RoomData/AddRoom`
+- **Parameters**: `room` (Room JSON object)
+
+#### UpdateRoom
+- **URL**: `api/RoomData/UpdateRoom/{id}`
+- **Method**: POST
+- **Description**: Updates a particular room by it's ID
+- **Parameters**:
+  - `id` (int)
+  - `room` (Room JSON object)
+
+#### DeleteRoom
+- **URL**: `api/RoomData/DeleteRoom/{id}`
+- **Method**: POST
+- **Description**: Deletes a category from the system by its ID.
+- **Parameters**: `id` (int)
+
 
 ## How to Use
 
