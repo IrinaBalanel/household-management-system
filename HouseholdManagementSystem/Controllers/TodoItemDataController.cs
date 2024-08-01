@@ -180,6 +180,7 @@ namespace HouseholdManagementSystem.Controllers
             todoItemDto.TodoItemId = todoItem.TodoItemId;
             todoItemDto.TodoItemDescription = todoItem.TodoItemDescription;
             todoItemDto.StatusId = todoItem.StatusId;
+            todoItemDto.Status = todoItem.Status.Status;
             todoItemDto.CategoryId = todoItem.CategoryId;
             todoItemDto.AssignedToOwnerId = todoItem.AssignedToOwnerId;
             todoItemDto.CreatedByOwnerId = todoItem.CreatedByOwnerId;

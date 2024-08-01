@@ -293,6 +293,7 @@
     <Compile Include="Models\TodoItemStatus.cs" />
     <Compile Include="Models\Transaction.cs" />
     <Compile Include="Models\TransactionType.cs" />
+    <Compile Include="Models\ViewModels\NewExpenseTransaction.cs" />
     <Compile Include="Models\ViewModels\UpdateTodoItem.cs" />
     <Compile Include="Models\ViewModels\AddTodoItem.cs" />
     <Compile Include="Models\ViewModels\CategoryTotal.cs" />

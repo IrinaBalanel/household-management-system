@@ -349,6 +349,7 @@ namespace HouseholdManagementSystem.Controllers
         }
 
         // POST:TodoItem/UpdateTodoItem
+        // POST:TodoItem/UpdateTodoItem
         [HttpPost]
         [Authorize]
         public ActionResult UpdateTodoItem(int id, TodoItem todoItem)
@@ -356,6 +357,19 @@ namespace HouseholdManagementSystem.Controllers
             GetApplicationCookie();
             string url = "TodoItemData/UpdateTodoItem/" + id;
             todoItem.TodoItemId = id;
+
+            // Fetch the existing TodoItem to compare the status
+            HttpResponseMessage existingItemResponse = client.GetAsync("TodoItemData/FindTodoItemById/" + id).Result;
+            if (!existingItemResponse.IsSuccessStatusCode)
+            {
+                TempData["ErrorMessage"] = "An error occurred while fetching the Todo item. Please try again.";
+                TempData["BackUrl"] = Url.Action("ListTodoItems", "TodoItem");
+                return RedirectToAction("Error");
+            }
+            TodoItemDto existingTodoItem = existingItemResponse.Content.ReadAsAsync<TodoItemDto>().Result;
+
+            bool statusChangedToDone = existingTodoItem.Status == "Pending" && todoItem.StatusId == 2;
+
             string jsonpayload = jss.Serialize(todoItem);
             HttpContent content = new StringContent(jsonpayload);
             content.Headers.ContentType.MediaType = "application/json";
@@ -363,15 +377,23 @@ namespace HouseholdManagementSystem.Controllers
 
             if (response.IsSuccessStatusCode)
             {
+                if (statusChangedToDone)
+                {
+                    return RedirectToAction("NewExpense", "Transaction", new
+                    {
+                        title = todoItem.TodoItemDescription,
+                        categoryId = todoItem.CategoryId,
+                        todoItemId = todoItem.TodoItemId,
+                    });
+                }
                 return RedirectToAction("ListTodoItems");
             }
             else
             {
-                TempData["ErrorMessage"] = "An error occurred while adding a Todo item. Please try again.";
+                TempData["ErrorMessage"] = "An error occurred while updating the Todo item. Please try again.";
                 TempData["BackUrl"] = Url.Action("ListTodoItems", "TodoItem");
                 return RedirectToAction("Error");
             }
         }
-
     }
 }

@@ -186,7 +186,7 @@ namespace HouseholdManagementSystem.Controllers
         }
 
         // GET: Transaction/NewExpense
-        [Authorize]
+        /*[Authorize]
         public ActionResult NewExpense()
         {
             //Get all categories for Expenses to render the dowpdown
@@ -196,7 +196,7 @@ namespace HouseholdManagementSystem.Controllers
             IEnumerable<CategoryDto> categories = response.Content.ReadAsAsync<IEnumerable<CategoryDto>>().Result;
 
             return View(categories);
-        }
+        }*/
 
         // GET: Transaction/NewIncome
         [Authorize]
@@ -212,7 +212,7 @@ namespace HouseholdManagementSystem.Controllers
         }
 
         // POST: Transaction/CreateExpense
-        [HttpPost]
+        /*[HttpPost]
         [Authorize]
         public ActionResult CreateExpense(Transaction transaction)
         {
@@ -238,6 +238,77 @@ namespace HouseholdManagementSystem.Controllers
                 TempData["BackUrl"] = Url.Action("NewExpense", "Transaction");
                 return RedirectToAction("Error");
             }
+        }*/
+
+        [HttpPost]
+        [Authorize]
+        public ActionResult CreateExpense(Transaction transaction)
+        {
+            return CreateOrUpdateExpense(transaction, false);
+        }
+
+        // GET: Transaction/NewExpense
+        [Authorize]
+        public ActionResult NewExpense(string title = null, int? categoryId = null, int? todoItemId = null)
+        {
+            // Get all categories for Expenses to render the dropdown
+            string url = "categoryData/listCategoryByTransactionType?transactionTypeName=Expense";
+            HttpResponseMessage response = client.GetAsync(url).Result;
+
+            IEnumerable<CategoryDto> categories = response.Content.ReadAsAsync<IEnumerable<CategoryDto>>().Result;
+
+            // Create a view model to pass the data to the view
+            NewExpenseTransaction viewModel = new NewExpenseTransaction
+            {
+                Categories = categories,
+                Title = title,
+                CategoryId = categoryId,
+                TransactionDate = DateTime.UtcNow,
+                TodoItemId = todoItemId
+            };
+
+            return View(viewModel);
+        }
+
+        // Common method for creating or updating an expense
+        private ActionResult CreateOrUpdateExpense(Transaction transaction, bool fromTodoItem)
+        {
+            GetApplicationCookie();
+            transaction.TransactionDate = DateTime.SpecifyKind(transaction.TransactionDate, DateTimeKind.Utc);
+            string url = "TransactionData/AddTransaction";
+
+            string jsonpayload = jss.Serialize(transaction);
+            Debug.WriteLine(jsonpayload);
+
+            HttpContent content = new StringContent(jsonpayload);
+            content.Headers.ContentType.MediaType = "application/json";
+
+            HttpResponseMessage response = client.PostAsync(url, content).Result;
+
+            if (response.IsSuccessStatusCode)
+            {
+                // If the expense is created from a TodoItem flow, redirect back to the ListTodoItems view
+                if (fromTodoItem)
+                {
+                    return RedirectToAction("ListTodoItems", "TodoItem");
+                }
+                // Otherwise, redirect to the ListExpenses view
+                return RedirectToAction("ListExpenses");
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "An error occurred while adding an expense. Please try again.";
+                TempData["BackUrl"] = Url.Action("NewExpense", "Transaction");
+                return RedirectToAction("Error");
+            }
+        }
+
+        // POST: Transaction/CreateExpenseFromTodoItem
+        [HttpPost]
+        [Authorize]
+        public ActionResult CreateExpenseFromTodoItem(Transaction transaction)
+        {
+            return CreateOrUpdateExpense(transaction, true);
         }
 
         // POST: Transaction/CreateIncome
