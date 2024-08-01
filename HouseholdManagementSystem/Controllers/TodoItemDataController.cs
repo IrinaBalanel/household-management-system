@@ -182,8 +182,12 @@ namespace HouseholdManagementSystem.Controllers
             todoItemDto.StatusId = todoItem.StatusId;
             todoItemDto.Status = todoItem.Status.Status;
             todoItemDto.CategoryId = todoItem.CategoryId;
+            todoItemDto.CategoryName = todoItem.Category.CategoryName;
             todoItemDto.AssignedToOwnerId = todoItem.AssignedToOwnerId;
             todoItemDto.CreatedByOwnerId = todoItem.CreatedByOwnerId;
+            todoItemDto.AssignedTo = todoItem.AssignedTo.OwnerName;
+            todoItemDto.CreatedBy = todoItem.CreatedBy.OwnerName;
+
 
             return Ok(todoItemDto);
         }
@@ -270,6 +274,40 @@ namespace HouseholdManagementSystem.Controllers
 
             return StatusCode(HttpStatusCode.NoContent);
         }
+
+        [ResponseType(typeof(void))]
+        [HttpPut]
+        [Route("api/TodoItemData/UpdateTodoItemWithTransactionId/{id}/{transactionId}")]
+        public IHttpActionResult UpdateTodoItemWithTransactionId(int id, int transactionId)
+        {
+            TodoItem todoItem = db.TodoItems.Find(id);
+            if (todoItem == null)
+            {
+                return NotFound();
+            }
+
+            todoItem.TransactionId = transactionId;
+            db.Entry(todoItem).State = EntityState.Modified;
+
+            try
+            {
+                db.SaveChanges();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!TodoItemExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return StatusCode(HttpStatusCode.NoContent);
+        }
+
 
         private bool TodoItemExists(int id)
         {

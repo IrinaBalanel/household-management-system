@@ -8,6 +8,7 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
+using HouseholdManagementSystem.Models.ViewModels;
 
 namespace HouseholdManagementSystem.Controllers
 {
@@ -209,5 +210,54 @@ namespace HouseholdManagementSystem.Controllers
             return Ok(category);
         }
 
+        [HttpGet]
+        [Route("api/CategoryData/GetCategoryDetails/{id}")]
+        public IHttpActionResult GetCategoryDetails(int id)
+        {
+            var category = db.Categories.Include(c => c.TransactionType).FirstOrDefault(c => c.CategoryId == id);
+            if (category == null)
+            {
+                return NotFound();
+            }
+
+            var todoItems = db.TodoItems.Where(t => t.CategoryId == id).ToList();
+            var transactions = db.Transactions.Where(t => t.CategoryId == id).ToList();
+
+            var categoryDetails = new CategoryDetails
+            {
+                Category = new CategoryDto
+                {
+                    CategoryId = category.CategoryId,
+                    CategoryName = category.CategoryName,
+                    TransactionTypeId = category.TransactionTypeId,
+                    TransactionTypeName = category.TransactionType.TransactionTypeName
+                },
+                TodoItems = todoItems.Select(t => new TodoItemDto
+                {
+                    TodoItemId = t.TodoItemId,
+                    TodoItemDescription = t.TodoItemDescription,
+                    StatusId = t.StatusId,
+                    Status = t.Status.Status,
+                    AssignedToOwnerId = t.AssignedToOwnerId,
+                    AssignedTo = t.AssignedTo.OwnerName,
+                    CreatedByOwnerId = t.CreatedByOwnerId,
+                    CreatedBy = t.CreatedBy.OwnerName,
+                    CategoryId = t.CategoryId,
+                    CategoryName = t.Category.CategoryName
+                }).ToList(),
+                Transactions = transactions.Select(t => new TransactionDto
+                {
+                    TransactionId = t.TransactionId,
+                    Title = t.Title,
+                    Amount = t.Amount,
+                    TransactionDate = t.TransactionDate,
+                    CategoryName = t.Category.CategoryName,
+                    TransactionTypeName = t.Category.TransactionType.TransactionTypeName,
+                    TodoItemId = t.TodoItemId
+                }).ToList()
+            };
+
+            return Ok(categoryDetails);
+        }
     } 
 }

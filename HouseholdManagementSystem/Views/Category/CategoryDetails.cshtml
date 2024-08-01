@@ -1,0 +1,57 @@
+﻿@model HouseholdManagementSystem.Models.ViewModels.CategoryDetails
+
+@{
+    ViewBag.Title = "Category Details";
+}
+
+<div class="container mt-5">
+    <div class="card">
+        <div class="card-header">
+            <h3>Category: @Model.Category.CategoryName</h3>
+        </div>
+        <div class="card-body">
+            <h4>Todo Items</h4>
+            @if (Model.TodoItems.Any())
+            {
+                <ul class="list-group mb-4">
+                    @foreach (var item in Model.TodoItems)
+                    {
+                        <li class="list-group-item">
+                            <a href="@Url.Action("ListTodoItems", "TodoItem", new { id = item.TodoItemId })">@item.TodoItemDescription</a>
+                        </li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <p>No Todo Items found for this category.</p>
+            }
+
+            <h4>Transactions</h4>
+            @if (Model.Transactions.Any())
+            {
+                <ul class="list-group">
+                    @foreach (var transaction in Model.Transactions)
+                    {
+                        if (transaction.TransactionTypeName == "Expense")
+                        {
+                            <li class="list-group-item">
+                                <a href="@Url.Action("ListExpenses", "Transaction", new { id = transaction.TransactionId })">@transaction.Title</a>
+                            </li>
+                        }
+                        else if (transaction.TransactionTypeName == "Income")
+                        {
+                            <li class="list-group-item">
+                                <a href="@Url.Action("ListIncomes", "Transaction", new { id = transaction.TransactionId })">@transaction.Title</a>
+                            </li>
+                        }
+                    }
+                </ul>
+            }
+            else
+            {
+                <p>No Transactions found for this category.</p>
+            }
+        </div>
+    </div>
+</div>

@@ -182,7 +182,7 @@ namespace HouseholdManagementSystem.Controllers
         ///curl -d @C:\Users\Ahzi\source\repos\PersonalFinanceTracker\PersonalFinanceTracker\JsonData\Transaction.json -H "Content-Type:application/json" https://localhost:44356/api/TransactionData/addTransaction
         ///{"TransactionId":9,"Title":"Cheque for freelance software gig","Amount":1000.99,"TransactionDate":"2024-06-03T00:00:00","CategoryId":2,"Category":null}
         /// </example>
-        [ResponseType(typeof(Transaction))]
+        [ResponseType(typeof(TransactionDto))]
         [HttpPost]
         [Route("api/TransactionData/AddTransaction")]
         public IHttpActionResult AddTransaction(Transaction transaction)
@@ -192,17 +192,30 @@ namespace HouseholdManagementSystem.Controllers
                 return BadRequest(ModelState);
             }
 
-            db.Transactions.Add(transaction);
-            db.SaveChanges();
+            try
+            {
+                db.Transactions.Add(transaction);
+                db.SaveChanges();
 
-            // Manually construct the URL for the newly created resource
-            //var location = new Uri(Request.RequestUri, $"/api/TransactionData/{transaction.TransactionId}");
+                var createdTransaction = new TransactionDto
+                {
+                    TransactionId = transaction.TransactionId,
+                    Title = transaction.Title,
+                    Amount = transaction.Amount,
+                    TransactionDate = transaction.TransactionDate,
+                    CategoryName = transaction.Category?.CategoryName,
+                    TransactionTypeName = transaction.Category?.TransactionType?.TransactionTypeName,
+                    TodoItemId = transaction.TodoItemId
+                };
 
-            // Return a response with the location of the newly created transaction
-            //return Created(location, transaction);
-
-            return Ok();
+                return Content(HttpStatusCode.Created, createdTransaction);
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
         }
+
 
         /// <summary>
         /// Deletes a transaction from the system by its ID

@@ -100,7 +100,7 @@ namespace HouseholdManagementSystem.Controllers
         }
 
         //GET: Transaction/ListExpenses
-        public ActionResult ListExpenses(string filter = null, string categoryName = null)
+        /*public ActionResult ListExpenses(string filter = null, string categoryName = null)
         {
             ListTransactions ViewModel = new ListTransactions();
 
@@ -183,7 +183,132 @@ namespace HouseholdManagementSystem.Controllers
             ViewModel.SelectedCategory = categoryName;
 
             return View(ViewModel);
+        }*/
+
+        // GET: Transaction/ListExpenses
+        public ActionResult ListExpenses(int? id = null, string filter = null, string categoryName = null)
+        {
+            ListTransactions ViewModel = new ListTransactions();
+
+            // Get all categories for Expenses to render the dropdown
+            string url = "categoryData/listCategoryByTransactionType?transactionTypeName=Expense";
+            HttpResponseMessage response = client.GetAsync(url).Result;
+            if (!response.IsSuccessStatusCode)
+            {
+                TempData["ErrorMessage"] = "An error occurred while listing all expense Categories. Please try again.";
+                TempData["BackUrl"] = Url.Action("ListExpenses", "Transaction");
+                return RedirectToAction("Error");
+            }
+
+            IEnumerable<CategoryDto> categories = response.Content.ReadAsAsync<IEnumerable<CategoryDto>>().Result;
+            ViewModel.CategoryList = categories;
+
+            // Check if id is provided
+            if (id.HasValue)
+            {
+                url = $"TransactionData/findTransactionById/{id.Value}";
+                response = client.GetAsync(url).Result;
+                if (!response.IsSuccessStatusCode)
+                {
+                    TempData["ErrorMessage"] = "An error occurred while fetching the expense. Please try again.";
+                    TempData["BackUrl"] = Url.Action("ListExpenses", "Transaction");
+                    return RedirectToAction("Error");
+                }
+                var transaction = response.Content.ReadAsAsync<TransactionDto>().Result;
+                ViewModel.TransactionList = new List<TransactionDto> { transaction };
+            }
+            else
+            {
+                // Build the query URL for transactions
+                url = "TransactionData/findTransactions?transactionType=Expense";
+
+                if (filter == "currentMonth")
+                {
+                    url += "&currentMonth=true";
+                }
+                else if (filter == "lastMonth")
+                {
+                    url += "&lastMonth=true";
+                }
+
+                if (!string.IsNullOrEmpty(categoryName))
+                {
+                    url += $"&categoryName={categoryName}";
+                }
+
+                response = client.GetAsync(url).Result;
+                IEnumerable<TransactionDto> expenseTransactions = response.Content.ReadAsAsync<IEnumerable<TransactionDto>>().Result;
+                ViewModel.TransactionList = expenseTransactions;
+            }
+
+            ViewModel.SelectedFilter = filter;
+            ViewModel.SelectedCategory = categoryName;
+
+            return View(ViewModel);
         }
+
+        // GET: Transaction/ListIncomes
+        public ActionResult ListIncomes(int? id = null, string filter = null, string categoryName = null)
+        {
+            ListTransactions ViewModel = new ListTransactions();
+
+            // Get all categories for Incomes to render the dropdown
+            string url = "categoryData/listCategoryByTransactionType?transactionTypeName=Income";
+            HttpResponseMessage response = client.GetAsync(url).Result;
+            if (!response.IsSuccessStatusCode)
+            {
+                TempData["ErrorMessage"] = "An error occurred while listing all income Categories. Please try again.";
+                TempData["BackUrl"] = Url.Action("ListIncomes", "Transaction");
+                return RedirectToAction("Error");
+            }
+
+            IEnumerable<CategoryDto> categories = response.Content.ReadAsAsync<IEnumerable<CategoryDto>>().Result;
+            ViewModel.CategoryList = categories;
+
+            // Check if id is provided
+            if (id.HasValue)
+            {
+                url = $"TransactionData/findTransactionById/{id.Value}";
+                response = client.GetAsync(url).Result;
+                if (!response.IsSuccessStatusCode)
+                {
+                    TempData["ErrorMessage"] = "An error occurred while fetching the income. Please try again.";
+                    TempData["BackUrl"] = Url.Action("ListIncomes", "Transaction");
+                    return RedirectToAction("Error");
+                }
+                var transaction = response.Content.ReadAsAsync<TransactionDto>().Result;
+                ViewModel.TransactionList = new List<TransactionDto> { transaction };
+            }
+            else
+            {
+                // Build the query URL for transactions
+                url = "TransactionData/findTransactions?transactionType=Income";
+
+                if (filter == "currentMonth")
+                {
+                    url += "&currentMonth=true";
+                }
+                else if (filter == "lastMonth")
+                {
+                    url += "&lastMonth=true";
+                }
+
+                if (!string.IsNullOrEmpty(categoryName))
+                {
+                    url += $"&categoryName={categoryName}";
+                }
+
+                response = client.GetAsync(url).Result;
+                IEnumerable<TransactionDto> incomeTransactions = response.Content.ReadAsAsync<IEnumerable<TransactionDto>>().Result;
+                ViewModel.TransactionList = incomeTransactions;
+            }
+
+            ViewModel.SelectedFilter = filter;
+            ViewModel.SelectedCategory = categoryName;
+
+            return View(ViewModel);
+        }
+
 
         // GET: Transaction/NewExpense
         /*[Authorize]
@@ -287,12 +412,25 @@ namespace HouseholdManagementSystem.Controllers
 
             if (response.IsSuccessStatusCode)
             {
-                // If the expense is created from a TodoItem flow, redirect back to the ListTodoItems view
-                if (fromTodoItem)
+
+                TransactionDto createdTransaction = response.Content.ReadAsAsync<TransactionDto>().Result;
+                int newTransactionId = createdTransaction.TransactionId;
+
+                if (transaction.TodoItemId.HasValue)
                 {
+                    string updateTodoUrl = $"TodoItemData/UpdateTodoItemWithTransactionId/{createdTransaction.TodoItemId.Value}/{createdTransaction.TransactionId}";
+
+                    HttpResponseMessage updateResponse = client.PutAsync(updateTodoUrl, null).Result;
+
+                    if (!updateResponse.IsSuccessStatusCode)
+                    {
+                        TempData["ErrorMessage"] = "An error occurred while updating the Todo item with the Transaction. Please try again.";
+                        TempData["BackUrl"] = Url.Action("ListTodoItems", "TodoItem");
+                        return RedirectToAction("Error");
+                    }
                     return RedirectToAction("ListTodoItems", "TodoItem");
                 }
-                // Otherwise, redirect to the ListExpenses view
+
                 return RedirectToAction("ListExpenses");
             }
             else

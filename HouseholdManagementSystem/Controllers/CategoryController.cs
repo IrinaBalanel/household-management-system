@@ -148,6 +148,26 @@ namespace HouseholdManagementSystem.Controllers
             }
         }
 
+        // GET: Category/CategoryDetails
+        [Authorize]
+        public ActionResult CategoryDetails(int id)
+        {
+            string url = $"CategoryData/GetCategoryDetails/{id}";
+            HttpResponseMessage response = client.GetAsync(url).Result;
+
+            if (response.IsSuccessStatusCode)
+            {
+                var categoryDetails = response.Content.ReadAsAsync<CategoryDetails>().Result;
+                return View(categoryDetails);
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "An error occurred while fetching the category details. Please try again.";
+                TempData["BackUrl"] = Url.Action("ListCategories", "Category");
+                return RedirectToAction("Error");
+            }
+        }
+
         //GET: Transaction/Error
         public ActionResult Error()
         {

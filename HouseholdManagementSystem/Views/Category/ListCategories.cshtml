@@ -14,8 +14,11 @@
                 <div class="card mb-3 me-3" style="width: auto;">
                     <div class="card-body">
                         <h5 class="card-title">@category.CategoryName</h5>
-                        <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#updateCategoryModal" data-id="@category.CategoryId" data-name="@category.CategoryName" data-transactiontype="@category.TransactionTypeId">Update</button>
-                        <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteCategoryModal" data-id="@category.CategoryId" data-name="@category.CategoryName">Delete</button>
+                        <div class="btn-group" role="group">
+                            <a href="@Url.Action("CategoryDetails", "Category", new { id = category.CategoryId })" class="btn btn-sm btn-info">View</a>
+                            <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#updateCategoryModal" data-id="@category.CategoryId" data-name="@category.CategoryName" data-transactiontype="@category.TransactionTypeId">Update</button>
+                            <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteCategoryModal" data-id="@category.CategoryId" data-name="@category.CategoryName">Delete</button>
+                        </div>
                     </div>
                 </div>
             }
@@ -32,8 +35,11 @@
                 <div class="card mb-3 me-3" style="width: auto;">
                     <div class="card-body">
                         <h5 class="card-title">@category.CategoryName</h5>
-                        <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#updateCategoryModal" data-id="@category.CategoryId" data-name="@category.CategoryName" data-transactiontype="@category.TransactionTypeId">Update</button>
-                        <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteCategoryModal" data-id="@category.CategoryId" data-name="@category.CategoryName">Delete</button>
+                        <div class="btn-group" role="group">
+                            <a href="@Url.Action("CategoryDetails", "Category", new { id = category.CategoryId })" class="btn btn-sm btn-info">View</a>
+                            <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#updateCategoryModal" data-id="@category.CategoryId" data-name="@category.CategoryName" data-transactiontype="@category.TransactionTypeId">Update</button>
+                            <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteCategoryModal" data-id="@category.CategoryId" data-name="@category.CategoryName">Delete</button>
+                        </div>
                     </div>
                 </div>
             }

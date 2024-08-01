@@ -68,7 +68,7 @@ namespace HouseholdManagementSystem.Controllers
                     return View(todoItems);
 
                 }*/
-        public ActionResult ListTodoItems(string ownerName = null, string filterType = null, string status = null, string categoryName = null, string assignedToOwner = null, string createdByOwner = null)
+        /*public ActionResult ListTodoItems(string ownerName = null, string filterType = null, string status = null, string categoryName = null, string assignedToOwner = null, string createdByOwner = null)
         {
             FilterTodoItems ViewModel = new FilterTodoItems
             {
@@ -181,7 +181,142 @@ namespace HouseholdManagementSystem.Controllers
 
             return View(ViewModel);
 
+        }*/
+
+        // GET: TodoItem/ListTodoItems
+        public ActionResult ListTodoItems(int? id = null, string ownerName = null, string filterType = null, string status = null, string categoryName = null, string assignedToOwner = null, string createdByOwner = null)
+        {
+            FilterTodoItems ViewModel = new FilterTodoItems
+            {
+                StatusList = new List<TodoItemStatusDto>(),
+                CategoryList = new List<CategoryDto>(),
+                AssignedToOwnersList = new List<OwnerDto>(),
+                CreatedByOwnersList = new List<OwnerDto>()
+            };
+
+            // Get status list
+            string url = "TodoItemStatusData/ListTodoItemStatus";
+            HttpResponseMessage response = client.GetAsync(url).Result;
+
+            if (!response.IsSuccessStatusCode)
+            {
+                TempData["ErrorMessage"] = "An error occurred while listing all statuses. Please try again.";
+                TempData["BackUrl"] = Url.Action("ListTodoItems", "TodoItem");
+                return RedirectToAction("Error");
+            }
+            ViewModel.StatusList = response.Content.ReadAsAsync<IEnumerable<TodoItemStatusDto>>().Result;
+
+            // Get category list
+            url = "CategoryData/ListAllCategories";
+            response = client.GetAsync(url).Result;
+            if (!response.IsSuccessStatusCode)
+            {
+                TempData["ErrorMessage"] = "An error occurred while listing all categories. Please try again.";
+                TempData["BackUrl"] = Url.Action("ListTodoItems", "TodoItem");
+                return RedirectToAction("Error");
+            }
+            ViewModel.CategoryList = response.Content.ReadAsAsync<IEnumerable<CategoryDto>>().Result;
+
+            // Get owners list
+            url = "OwnerData/ListOwners";
+            response = client.GetAsync(url).Result;
+            if (!response.IsSuccessStatusCode)
+            {
+                TempData["ErrorMessage"] = "An error occurred while listing all owners. Please try again.";
+                TempData["BackUrl"] = Url.Action("ListTodoItems", "TodoItem");
+                return RedirectToAction("Error");
+            }
+            ViewModel.AssignedToOwnersList = response.Content.ReadAsAsync<IEnumerable<OwnerDto>>().Result;
+
+            // Get owners list
+            url = "OwnerData/ListOwners";
+            response = client.GetAsync(url).Result;
+            if (!response.IsSuccessStatusCode)
+            {
+                TempData["ErrorMessage"] = "An error occurred while listing all owners. Please try again.";
+                TempData["BackUrl"] = Url.Action("ListTodoItems", "TodoItem");
+                return RedirectToAction("Error");
+            }
+            ViewModel.CreatedByOwnersList = response.Content.ReadAsAsync<IEnumerable<OwnerDto>>().Result;
+
+            // Check if id is provided
+            if (id.HasValue)
+            {
+                url = $"TodoItemData/FindTodoItemById/{id.Value}";
+                response = client.GetAsync(url).Result;
+                if (!response.IsSuccessStatusCode)
+                {
+                    TempData["ErrorMessage"] = "An error occurred while fetching the Todo item. Please try again.";
+                    TempData["BackUrl"] = Url.Action("ListTodoItems", "TodoItem");
+                    return RedirectToAction("Error");
+                }
+                var todoItem = response.Content.ReadAsAsync<TodoItemDto>().Result;
+                ViewModel.TodoItemsList = new List<TodoItemDto> { todoItem };
+
+                ViewModel.SelectedStatus = todoItem.Status;
+                ViewModel.SelectedCategory = todoItem.CategoryName;
+                ViewModel.SelectedAssignedToOwner = todoItem.AssignedTo;
+                ViewModel.SelectedCreatedByOwner = todoItem.CreatedBy;
+            }
+            else
+            {
+                // Get todo items list
+                url = "TodoItemData/ListAllTodoItems";
+                var queryParams = new List<string>();
+                if (!string.IsNullOrEmpty(status))
+                {
+                    queryParams.Add($"status={status}");
+                }
+                if (!string.IsNullOrEmpty(categoryName))
+                {
+                    queryParams.Add($"categoryName={categoryName}");
+                }
+                if (!string.IsNullOrEmpty(ownerName))
+                {
+                    if (filterType == "assigned")
+                    {
+                        queryParams.Add($"assignedToOwner={ownerName}");
+                    }
+                    else if (filterType == "created")
+                    {
+                        queryParams.Add($"createdByOwner={ownerName}");
+                    }
+                }
+                if (!string.IsNullOrEmpty(assignedToOwner))
+                {
+                    queryParams.Add($"assignedToOwner={assignedToOwner}");
+                }
+                if (!string.IsNullOrEmpty(createdByOwner))
+                {
+                    queryParams.Add($"createdByOwner={createdByOwner}");
+                }
+
+                if (queryParams.Any())
+                {
+                    url += "?" + string.Join("&", queryParams);
+                }
+
+                // Get filtered list
+                response = client.GetAsync(url).Result;
+                if (!response.IsSuccessStatusCode)
+                {
+                    TempData["ErrorMessage"] = "An error occurred while listing all TodoItems. Please try again.";
+                    TempData["BackUrl"] = Url.Action("ListTodoItems", "TodoItem");
+                    return RedirectToAction("Error");
+                }
+                IEnumerable<TodoItemDto> todoItems = response.Content.ReadAsAsync<IEnumerable<TodoItemDto>>().Result;
+                ViewModel.TodoItemsList = todoItems;
+
+                // Set selected filters
+                ViewModel.SelectedStatus = status;
+                ViewModel.SelectedCategory = categoryName;
+                ViewModel.SelectedAssignedToOwner = assignedToOwner;
+                ViewModel.SelectedCreatedByOwner = createdByOwner;
+            }
+
+            return View(ViewModel);
         }
+
 
         // POST: TodoItem/DeleteTodoItem/id
         [Authorize]
@@ -348,7 +483,6 @@ namespace HouseholdManagementSystem.Controllers
             return View(ViewModel);
         }
 
-        // POST:TodoItem/UpdateTodoItem
         // POST:TodoItem/UpdateTodoItem
         [HttpPost]
         [Authorize]
