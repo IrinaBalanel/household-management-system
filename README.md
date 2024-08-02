@@ -1,4 +1,5 @@
 # Household Management System
+
 The Household Management System contains 3 features
 - Todo Items Management
 - Household Finance Tracker
@@ -42,11 +43,13 @@ Below are listed down all the Entities, Data Controllers related to the Todo Ite
   - `categoryName` (string)
   - `assignedToOwner` (string)
   - `createdByOwner` (string)
+  - `id` (optional, int) - If provided, retrieves the todo item by its ID
 - **Examples**:
   - `/api/TodoItem/ListTodoItems?status=Pending`
   - `/api/TodoItem/ListTodoItems?categoryName=Rent`
   - `/api/TodoItem/ListTodoItems?assignedToOwner=Irina`
   - `/api/TodoItem/ListTodoItems?createdByOwner=Mom`
+  - `/api/TodoItem/ListTodoItems?id=1`
 
 #### FindTodoItemById
 - **URL**: `api/TodoItemData/FindTodoItemById/{todoItemId}`
@@ -69,13 +72,18 @@ Below are listed down all the Entities, Data Controllers related to the Todo Ite
   - `id` (int)
   - `todoItem` (TodoItem JSON object)
 
+#### UpdateTodoItemWithTransactionId
+- **URL**: `api/TodoItemData/UpdateTodoItemWithTransactionId/{id}`
+- **Method**: PUT
+- **Description**: Updates a particular TodoItem's TransactionId.
+- **Parameters**: `id` (int), `transactionId` (int)
+
 #### DeleteTodoItem
 - **URL**: `api/TodoItemData/DeleteTodoItem/{id}`
 - **Method**: DELETE
 - **Description**: Deletes a todo item from the system by its ID.
 - **Parameters**: `id` (int)
 - **Returns**: If the todo item has associated transaction, returns a `409 Conflict` status with a message indicating the todo item cannot be deleted.
-
 
 ## `Household Finance Tracker`
 Below are listed down all the Entities, Data Controllers related to the HouseHold Finance Tracker
@@ -88,6 +96,7 @@ Below are listed down all the Entities, Data Controllers related to the HouseHol
 - `Amount` - Amount of the transaction
 - `TransactionDate` - Date of the transaction
 - `CategoryId` - Foreign key to the Category entity
+- `TodoItemId` - Nullable foreign key to the TodoItem entity
 
 ### Category
 - `CategoryId` - Primary key
@@ -184,7 +193,26 @@ Below are listed down all the Entities, Data Controllers related to the HouseHol
 - **Method**: DELETE
 - **Description**: Deletes a category from the system by its ID.
 - **Parameters**: `id` (int)
-- **Returns**: If the category has associated transactions, returns a `409 Conflict` status with a message indicating the category cannot be deleted.
+- **Returns**: If the category has associated transactions or todo items, returns a `409 Conflict` status with a message indicating the category cannot be deleted.
+
+#### findCategoryById
+- **URL**: `api/CategoryData/findCategoryById/{categoryId}`
+- **Method**: GET
+- **Description**: Finds a category by its ID.
+- **Parameters**: `categoryId` (int)
+- **Example**: `GET api/CategoryData/findCategoryById/1`
+
+#### ListTransactionsByCategory
+- **URL**: `api/TransactionData/ListTransactionsByCategory/{categoryId}`
+- **Method**: GET
+- **Description**: Retrieves a list of transactions for a specific category.
+- **Parameters**: `categoryId` (int)
+
+#### ListTodoItemsByCategory
+- **URL**: `api/TodoItemData/ListTodoItemsByCategory/{categoryId}`
+- **Method**: GET
+- **Description**: Retrieves a list of todo items for a specific category.
+- **Parameters**: `categoryId` (int)
 
 ## `Household Cleaning Pipeline`
 Below are listed down all the Entities, Data Controllers related to the Household Cleaning Pipeline
@@ -210,6 +238,7 @@ Below are listed down all the Entities, Data Controllers related to the Househol
 ## Data Controllers
 
 ### ChoreDataController
+
 #### ListChoresForOwner
 - **URL**: `api/ChoreData/ListChoresForOwner/{id}`
 - **Method**: GET
@@ -243,6 +272,7 @@ Below are listed down all the Entities, Data Controllers related to the Househol
 - **Example**: `api/ChoreData/UnAssignChoreFromRoom/20/3`
 
 ### OwnerDataController
+
 #### ListOwners
 - **URL**: `api/OwnerData/ListOwners`
 - **Method**: GET
@@ -278,6 +308,7 @@ Below are listed down all the Entities, Data Controllers related to the Househol
 - **Returns**: If the owner has associated todo items, returns a `409 Conflict` status with a message indicating the owner cannot be deleted.
 
 ### RoomDataController
+
 #### ListRooms
 - **URL**: `api/RoomData/ListRooms`
 - **Method**: GET
@@ -324,7 +355,6 @@ Below are listed down all the Entities, Data Controllers related to the Househol
 - **Method**: POST
 - **Description**: Deletes a category from the system by its ID.
 - **Parameters**: `id` (int)
-
 
 ## How to Use
 
