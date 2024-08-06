@@ -64,13 +64,24 @@
                         <p class="custom card-title">@todoitem.AssignedTo</p>
                         <p class="custom card-title">@todoitem.CreatedBy</p>
                         <div>
-                            <a href="@Url.Action("ListExpenses", "Transaction", new { transactionId = todoitem.TransactionId })" class="btn btn-outline-primary" role="button">
-                                <img src="~/Content/images/coin.png" alt="A dollar icon" class="size">
-                            </a>
-                            <a href="/TodoItem/EditTodoItem/@todoitem.TodoItemId" class="btn btn-outline-primary" role="button">
+
+                            @if (todoitem.TransactionId.HasValue)
+                            {
+                                <a href="@Url.Action("ListExpenses", "Transaction", new { transactionId = todoitem.TransactionId })" class="btn btn-outline-primary" role="button" title="View related expense">
+                                    <img src="~/Content/images/coin.png" alt="A dollar icon" class="size">
+                                </a>
+                            }
+                            else
+                            {
+
+                                <a href="@Url.Action("ListExpenses", "Transaction", new { transactionId = todoitem.TransactionId })" class="btn btn-outline-primary disabled" role="button" aria-disabled="true">
+                                    <img src="~/Content/images/coin.png" alt="A dollar icon" class="size">
+                                </a>
+                            }
+                            <a href="/TodoItem/EditTodoItem/@todoitem.TodoItemId" class="btn btn-outline-primary" role="button" title="Update todo item">
                                 <img src="~/Content/images/editing.png" alt="A pencil icon" class="size">
                             </a>
-                            <a href="#" class="btn btn-outline-danger me-2" role="button" data-bs-toggle="modal" data-bs-target="#deleteModal" data-id="@todoitem.TodoItemId" data-title="@todoitem.TodoItemDescription">
+                            <a href="#" class="btn btn-outline-danger me-2" role="button" title="Delete todo item" data-bs-toggle="modal" data-bs-target="#deleteModal" data-id="@todoitem.TodoItemId" data-title="@todoitem.TodoItemDescription">
                                 <img src="~/Content/images/bin.png" alt="A dustbin icon" class="size">
                             </a>
                         </div>

@@ -1,6 +1,6 @@
 ﻿@{
-    ViewBag.Title = "Error"; 
-    var backUrl = TempData["BackUrl"] as string ?? Url.Action("Owner");
+    ViewBag.Title = "Error";
+    /*    var backUrl = TempData["BackUrl"] as string ?? Url.Action("Owner");*/
     var errorMessage = TempData["ErrorMessage"] as string ?? "An unexpected error occurred. Please try again later.";
 }
 
@@ -8,6 +8,6 @@
     <h3 class="text-center text-danger">An Error Occurred</h3>
     <p class="text-center">@errorMessage</p>
     <div class="text-center">
-        <a href="@backUrl" class="btn btn-primary">Go Back</a>
+        <a href="List" class="btn btn-primary">Go Back</a>
     </div>
 </div>

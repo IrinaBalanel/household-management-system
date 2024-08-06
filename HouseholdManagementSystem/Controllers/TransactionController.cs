@@ -186,7 +186,7 @@ namespace HouseholdManagementSystem.Controllers
         }*/
 
         // GET: Transaction/ListExpenses
-        public ActionResult ListExpenses(int? id = null, string filter = null, string categoryName = null)
+        public ActionResult ListExpenses(int? transactionId = null, string filter = null, string categoryName = null)
         {
             ListTransactions ViewModel = new ListTransactions();
 
@@ -204,9 +204,9 @@ namespace HouseholdManagementSystem.Controllers
             ViewModel.CategoryList = categories;
 
             // Check if id is provided
-            if (id.HasValue)
+            if (transactionId.HasValue)
             {
-                url = $"TransactionData/findTransactionById/{id.Value}";
+                url = $"TransactionData/findTransactionById/{transactionId.Value}";
                 response = client.GetAsync(url).Result;
                 if (!response.IsSuccessStatusCode)
                 {

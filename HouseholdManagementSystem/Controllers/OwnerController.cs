@@ -211,12 +211,15 @@ namespace HouseholdManagementSystem.Controllers
             HttpContent content = new StringContent("");
             HttpResponseMessage response = client.PostAsync(url, content).Result;
 
+
             if (response.IsSuccessStatusCode)
             {
                 return RedirectToAction("List");
             }
             else
             {
+                TempData["ErrorMessage"] = "An error occurred when deleting a this owner. Please try again.";
+                TempData["BackUrl"] = Url.Action("List");
                 return RedirectToAction("Error");
             }
 

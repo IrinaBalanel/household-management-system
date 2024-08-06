@@ -448,6 +448,7 @@
     <Content Include="Views\TodoItem\Error.cshtml" />
     <Content Include="Views\TodoItem\EditTodoItem.cshtml" />
     <Content Include="Views\Category\CategoryDetails.cshtml" />
+    <Content Include="Views\Chore\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

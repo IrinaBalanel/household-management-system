@@ -137,6 +137,12 @@ namespace HouseholdManagementSystem.Controllers
             return View();
         }
 
+        public ActionResult Index()
+        {
+
+            return View();
+        }
+
         // GET: Chore/New
         [Authorize]
         public ActionResult New()
